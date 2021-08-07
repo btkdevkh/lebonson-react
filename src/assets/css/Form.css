@@ -1,0 +1,39 @@
+/* Form */
+.form form input {
+  padding: 10px;
+  margin-bottom: 3px;
+  width: 100%;
+  border: inherit;
+  font-family: inherit;
+  border-radius: 3px;
+}
+.form form input[type="submit"] {
+  color: var(--third-color);
+  background-color: var(--btn-color);
+  cursor: pointer;
+}
+.form .forgot-password {
+  font-size: 14px;
+  color: var(--additional-color);
+}
+.form .error,
+.form .success {
+  color: var(--btn-color);
+  font-size: 14px;
+}
+.form .success {
+  color: var(--additional-color);
+}
+.form .return {
+  display: block;
+  width: 200px;
+  margin: 15px auto;
+}
+
+/* Responsive */
+@media screen and (min-width: 468px) {
+  .form {
+    width: 468px;
+    margin: auto;
+  }
+}

@@ -1,0 +1,24 @@
+.profil-user-infos {
+  position: relative;
+  padding: 25px;
+  border-radius: 3px;
+  color: var(--secondary-color);
+  background-color: var(--additional-color);
+}
+.profil-user-infos a {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  color: var(--btn-color);
+}
+
+/* Responsive */
+@media screen and (min-width: 768px) {
+  .profil {
+    width: 568px;
+    margin: 0 auto;
+  }
+  .profil h3 {
+    text-align: center;
+  }
+}

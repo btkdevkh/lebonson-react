@@ -1,0 +1,10 @@
+/* Slider */
+.product-slider-infos {
+  border-radius: 3px;
+  background-color: #fff;
+  height: 360px;
+}
+.product-slider-infos img {
+  width: 320px;
+  padding: 25px;
+}

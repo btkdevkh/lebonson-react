@@ -1,0 +1,33 @@
+/* Payment */
+.payment {
+  text-align: center;
+}
+.fa-lock {
+  margin: 0 3px;
+  color: #008000;
+}
+.pay-provider-cb-cart-container {
+  position: relative;
+  background-color: var(--third-color);
+  padding: 45px 25px;
+}
+.pay-btn {
+  border: inherit;
+  padding: 10px;
+  margin-top: 45px;
+  border-radius: 3px;
+  color: var(--third-color);
+  background-color: #008000;
+  cursor: pointer;
+}
+
+/* Responsive */
+@media screen and (min-width: 768px) {
+  .pay-provider-cb-cart-container {
+    width: 568px;
+    margin: 0 auto;
+  }
+  .payment h3 {
+    text-align: center;
+  }
+}

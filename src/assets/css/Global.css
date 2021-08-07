@@ -1,0 +1,135 @@
+@import url('https://fonts.googleapis.com/css2?family=Georama:wght@300;400;700&display=swap');
+
+/* Color */
+:root {
+  --primary-color: #AC3D55;
+  --secondary-color: #222334;
+  --third-color: #F6F9F8;
+  --btn-color: #ED6344;
+  --additional-color: #1CC8E9;
+}
+
+/* General styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  scroll-behavior: smooth;
+  min-width: 320px;
+  font-weight: 400;
+  line-height: 1.6;
+  color: var(--third-color);
+  background-color: var(--secondary-color);
+  font-family: 'Georama', sans-serif;
+}
+h3 {
+  margin: 15px 0;
+  text-align: justify;
+}
+li {
+  list-style-type: none;
+}
+a {
+  text-decoration: none;
+  color: var(--third-color);
+}
+img {
+  width: 100%;
+}
+.container {
+  max-width: 1024px;
+  margin: auto;
+  padding: 0 10px;
+}
+.btn {
+  border: inherit;
+  color: var(--third-color);
+  font-size: inherit;
+  font-family: inherit;
+  cursor: pointer;
+  padding: 13px 20px;
+  border-radius: 3px;
+  background-color: var(--btn-color);
+}
+table {
+  text-align: center;
+  width: 100%;
+  border-radius: 3px;
+  color: var(--secondary-color);
+  border: 1px solid var(--btn-color);
+}
+table th {
+  color: var(--third-color);
+  padding: 5px 10px;
+  background-color: var(--btn-color);
+}
+table td {
+  padding: 5px;
+  background-color: var(--third-color);
+}
+.error,
+.success {
+  color: var(--btn-color);
+  font-size: 14px;
+}
+.success {
+  color: var(--additional-color);
+}
+
+input:focus {
+  outline: none;
+}
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+textarea {
+  width: 100%;
+  padding: 10px 10px;
+  font-family: inherit;
+  border-radius: 3px;
+}
+
+/* Text */
+.txt-justify {
+  text-align: justify;
+}
+.txt-center {
+  text-align: center;
+}
+
+/* Margin & Padding */
+.margin {
+  margin: 15px 0;
+}
+.mt {
+  margin-top: 15px;
+}
+.mb {
+  margin-bottom: 15px;
+}
+.padding {
+  margin: 25px 0;
+}
+
+/* Responsive */
+@media screen and (min-width: 768px) {
+  table {
+    width: 568px;
+    margin: 0 auto;
+  }
+}
+@media screen and (min-width: 1024px) {
+  .container {
+    padding: 0;
+  }
+}
