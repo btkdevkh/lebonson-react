@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
-import { Redirect } from 'react-router-dom';
-import { createUser } from '../../api/user';
+import React, { useState, useEffect, Fragment } from 'react';
+import { useHistory } from 'react-router-dom';
 import HeadingThree from '../HeadingThree';
-import { Fragment } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { registerUser } from '../../actions/user/userAction';
+import Loading from '../Loading';
 
 const AddUser = () => {
 
@@ -15,50 +16,38 @@ const AddUser = () => {
   const [zip, setZip] = useState("");
   const [city, setCity] = useState("");
 
-  const [error, setError] = useState("");
-  const [sucess, setSucess] = useState("");
-  const [redirect, setRedirect] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [showError, setShowError] = useState(false);
+  const history = useHistory();
 
-  const handleOnSubmit = async () => {
+  const dispatch = useDispatch();
+  const userState = useSelector(state => state.user);
+  const { isLogged, error, msg } = userState;
 
-    if(!firstName || !lastName || !email || !password || !confirmPassword || !address || !zip || !city) {
-      setError("* Tous les champs sont requises");
-    } else if(password !== confirmPassword) {
-      setError("* Le mot de pass doit être identique");
-    } else {
-      try {
-        setError("");
-
-        const user = {
-          firstName,
-          lastName,
-          email,
-          password,
-          address,
-          zip,
-          city
-        }
-
-        const response = await createUser(user)
-        //console.log(response);
-
-        if(response.status === 200) {
-          setSucess("Votre compte a été créé ");
-          setTimeout(() => {
-            setSucess("")
-            setRedirect(redirect => redirect = true);
-          }, 2000);
-        }
-
-      } catch (error) {
-        console.log(error);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if(isLogged) {
+        setLoading(true);
+        setShowError(false);
+        setTimeout(() => history.push('/user/profil'), 3000);
       }
-    }
+    }, 3000);
+
+    // Clean up
+    return () => clearTimeout(timer);
+
+  }, [history, isLogged, error, msg])
+
+  const handleOnSubmit = () => {
+    setShowError(true)
+
+    const user = { firstName, lastName, email, password, confirmPassword, address, zip, city };
+    dispatch(registerUser(user));
   }
 
   return (
     <Fragment>
-      {redirect && <Redirect to="/user/login" />}
+      {loading && <Loading />}
       <section className="form">
         <HeadingThree title="S'enregistrer" />
         <form
@@ -139,8 +128,8 @@ const AddUser = () => {
             />
           </div>
         </form>
-        <p className={`error`}>{error}</p>
-        <p className={`success`}>{sucess}</p>
+        <p className="error txt-center mt">{showError && error}</p>
+        <p className="success txt-center">{msg && msg}</p>
       </section>
     </Fragment>
   )

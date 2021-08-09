@@ -1,7 +1,9 @@
-import React, { useState, Fragment } from 'react'
-import { logInUser } from '../../api/user';
-import { Link, Redirect } from 'react-router-dom'; 
+import React, { useState, Fragment, useEffect } from 'react';
+import { Link, useHistory } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { loginUser } from '../../actions/user/userAction';
 import HeadingThree from '../HeadingThree';
+import Loading from '../Loading';
 import '../../assets/css/Form.css';
 
 const Login = () => {
@@ -9,35 +11,35 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const [error, setError] = useState("");
-  const [redirect, setRedirect] = useState(false);
+  const [showError, setShowError] = useState(false);
+  const history = useHistory();
+
+  const dispatch = useDispatch();
+  const userState = useSelector(state => state.user);
+  const { isLogged, error } = userState;
+  
+  useEffect(() => {
+    if(isLogged) {
+      setTimeout(() => {
+        history.push('/');
+      }, 1000);
+    }
+
+    const timer = setTimeout(() => setShowError(false), 3000);
+    return () => clearTimeout(timer);
+
+  }, [history, isLogged, error])
 
   const handleOnSubmit = () => {
-    if(!email || !password) {
-      setError("* Identifiez-vous");
-    } else {
-      setError("");
+    setShowError(true);
 
-      const user = {
-        email,
-        password
-      }
-
-      logInUser(user)
-      .then(res => {
-        //console.log(res);
-        setError(`* ${res.msg}`);
-        if(res.status === 200) {
-          window.localStorage.setItem("lebonson-token", res.token);
-          setRedirect(redirect => redirect = true);
-        }
-      })
-    }
+    const user = { email, password };
+    dispatch(loginUser(user))
   }
 
   return (
     <Fragment>
-      {redirect && <Redirect to="/" />}
+      {isLogged && <Loading />}
       <section className="form">
         <HeadingThree title="Connexion" />
         <form
@@ -77,10 +79,10 @@ const Login = () => {
         >
           <i className="fas fa-key"></i> Mot de passe oublié ? 
         </Link>
-        <p className={`error`}>{error}</p>
+        <p className="error txt-center">{showError && error}</p>
       </section>
     </Fragment>
   )
 }
 
-export default Login
+export default Login;

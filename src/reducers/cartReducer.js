@@ -13,7 +13,7 @@ const initialState = {
   isCartEmpty: isEmpty
 }
 
-const CartReducer = (state = initialState, action) => {
+const cartReducer = (state = initialState, action) => {
   switch (action.type) {
     case ADD_TO_CART:
       return {
@@ -29,4 +29,4 @@ const CartReducer = (state = initialState, action) => {
   }
 }
 
-export default CartReducer;
+export default cartReducer;

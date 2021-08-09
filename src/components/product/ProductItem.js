@@ -1,18 +1,19 @@
 import React, { Fragment, useState } from 'react';
 import { config } from '../../config';
 import { Redirect, useHistory } from 'react-router-dom';
-import { connect } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { addToCart } from '../../actions/cart/cartAction';
 
-const ProductItem = (props) => {
-  //console.log(props);
-
-  // Destructuring from props of products
-  const { id, title, price, image, quantity } = props.product;
+const ProductItem = ({ product }) => {
+  const { id, title, price, image, quantity } = product;
   
   const [selectedQty, setSelectedQty] = useState(0);
   const [redirect, setRedirect] = useState(false);
   const history = useHistory();
+
+  const dispatch = useDispatch();
+  const cartState = useSelector(state => state.cart);
+  const { carts } = cartState;
 
   const handleClickPlus = () => {
     if(selectedQty >= quantity) {
@@ -34,6 +35,7 @@ const ProductItem = (props) => {
   return (
     <Fragment>
       { redirect && <Redirect to="/products"/> }
+      {product &&
       <article className="product-item">
         <img src={`${config.img_url}/${image}`} alt={title} />
         <div className="product-item-infos">
@@ -75,7 +77,7 @@ const ProductItem = (props) => {
               if(selectedQty < 1) {
                 console.log("NO");
               } else {
-                props.addToCart(id, selectedQty, props.cart.carts);
+                dispatch(addToCart(id, selectedQty, carts));
                 
                 setSelectedQty(0);
                 setRedirect(true);
@@ -95,19 +97,9 @@ const ProductItem = (props) => {
             Infos
           </button>
         </form>
-      </article>
+      </article> }
     </Fragment>
   )
 }
 
-const mapStateToProps = (store) => {
-  return {
-    cart: store.cart,
-  }
-}
-
-const mapDispatchToProps = {
-  addToCart,
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(ProductItem);
+export default ProductItem;

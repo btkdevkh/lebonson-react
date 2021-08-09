@@ -98,6 +98,9 @@ textarea {
   font-family: inherit;
   border-radius: 3px;
 }
+input[type="submit"] {
+  cursor: pointer;
+}
 
 /* Text */
 .txt-justify {
@@ -105,6 +108,11 @@ textarea {
 }
 .txt-center {
   text-align: center;
+}
+.txt-bg {
+  padding: 10px;
+  border-radius: 3px;
+  background-color: var(--btn-color);
 }
 
 /* Margin & Padding */
@@ -126,6 +134,10 @@ textarea {
   table {
     width: 568px;
     margin: 0 auto;
+  }
+  .txt-bg {
+    width: 450px;
+    margin: 15px auto;
   }
 }
 @media screen and (min-width: 1024px) {

@@ -1,28 +1,35 @@
-import React, { useEffect, useState, Fragment } from 'react';
-import { connect } from 'react-redux';
+import React, { useEffect, Fragment } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { loadProductsByOrderId } from '../actions/product/productAction';
 import HeadingThree from '../components/HeadingThree';
-import { getProductsByOrderId } from '../api/product';
 import PayProvider from '../components/payment/PayProvider';
 import '../assets/css/Payment.css';
 
 const Payment = (props) => {
-
-  //console.log(props);
-
-  const [orderDetail, setOrderDetail] = useState([]);
-
-  // eslint-disable-next-line
   const order_id = Number(props.match.params.id);
-  useEffect(() => {
-    getProductsByOrderId(order_id)
-      .then(res => {
-        //console.log(res);
-        setOrderDetail(res.productsByOrderId)
-      })
-      // eslint-disable-next-line
-  }, [])
 
-  const itemsPrice = orderDetail.reduce((acc, item) => acc + item.total, 0).toFixed(2);
+  const dispatch = useDispatch();
+  const userState = useSelector(state => state.user);
+  const productByOrderState = useSelector(state => state.productByOrder);
+  const { isLogged } = userState;
+  const { products } = productByOrderState;
+
+  useEffect(() => {
+    dispatch(loadProductsByOrderId(order_id));
+
+    window.location.hash = "#chaged";
+    window.onhashchange = locationHashChanged;
+    // eslint-disable-next-line
+  }, [dispatch])
+
+  // https://developer.mozilla.org/fr/docs/Web/API/WindowEventHandlers/onhashchange
+  const locationHashChanged = () => {
+    if(window.location.hash === "#chaged") {
+      window.location.reload();
+    }
+  }
+
+  const itemsPrice = products.reduce((acc, item) => acc + item.total, 0).toFixed(2);
   const taxPrice = Number((0.15 * itemsPrice).toFixed(2));
   const totalPrice = (
     Number(itemsPrice) + 
@@ -53,8 +60,8 @@ const Payment = (props) => {
         </tfoot>
         <tbody>
           {
-            orderDetail.length > 0 &&
-            orderDetail.map((item, idx) => (
+            products.length > 0 &&
+            products.map((item, idx) => (
               <tr key={idx}>
                 <td>{item.title}</td>
                 <td>{item.selectedQty}</td>
@@ -65,22 +72,14 @@ const Payment = (props) => {
         </tbody>
       </table>
 
-      {
-        props.user.isLogged === true &&
+      { 
+        isLogged === true &&
         <Fragment>
           <PayProvider order_id={order_id} />
-        </Fragment>
+        </Fragment> 
       }
     </section> 
   )
 }
 
-const mapStateToProps = (store) => {
-  return {
-    user: store.user,
-    cart: store.cart,
-    order: store.order
-  }
-}
-
-export default connect(mapStateToProps)(Payment);
+export default Payment;

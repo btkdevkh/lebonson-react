@@ -1,24 +1,28 @@
 import React, { Fragment } from 'react';
-import { connect } from 'react-redux';
+import { useHistory } from 'react-router-dom'
+import { useSelector, useDispatch } from 'react-redux';
 import { config } from '../config';
 import { addToCart, removeFromCart } from '../actions/cart/cartAction';
 import HeadingThree from '../components/HeadingThree';
 import Button from '../components/Button';
 import '../assets/css/Cart.css';
 
-const Cart = (props) => {
-  // console.log(props.cart.carts);
+const Cart = () => {
+
+  const dispatch = useDispatch();
+  const users = useSelector(state => state.user);
+  const cartList = useSelector(state => state.cart);
+  const { isLogged } = users;
+  const { carts } = cartList;
+
+  const history = useHistory();
 
   return (
     <section className="cart">
-      { 
-        props.cart.carts.length > 0 && 
-        <HeadingThree title="Panier" /> 
-      }
-
+      { carts.length > 0 && <HeadingThree title="Panier" /> }
       {
-        props.cart.carts.length > 0 ?
-        props.cart.carts.map((item) => (
+        carts.length > 0 ?
+        carts.map((item) => (
         <Fragment key={item.id}>
           <article className="cart-item">
 
@@ -49,7 +53,7 @@ const Cart = (props) => {
                     if(item.selectedQuantity <= 1) {
                       console.log("NO -");
                     } else {
-                      props.addToCart(item.id, item.selectedQuantity - 1, props.cart.carts);
+                      dispatch(addToCart(item.id, item.selectedQuantity - 1, carts));
                     }
                   }}
                 >
@@ -62,7 +66,7 @@ const Cart = (props) => {
                     if(item.selectedQuantity >= item.quantity) {
                       console.log("NO +");
                     } else {
-                      props.addToCart(item.id, item.selectedQuantity + 1, props.cart.carts);
+                      dispatch(addToCart(item.id, item.selectedQuantity + 1, carts));
                     }
                   }}
                 >
@@ -75,7 +79,7 @@ const Cart = (props) => {
             <button 
               className="cart-item-rm-btn"
               onClick={() => {
-                props.removeFromCart(item.id, props.cart.carts)
+                dispatch(removeFromCart(item.id, carts));
               }}
             >
               <i className="fas fa-trash-alt"></i>
@@ -89,24 +93,24 @@ const Cart = (props) => {
           <Button 
             className="btn"
             title="Retour au shopping" 
-            onClick={() => props.history.push('/products')}
+            onClick={() => history.push('/products')}
           />
         </Fragment>
       }
       
       {
-        props.cart.carts.length > 0 &&
+        carts.length > 0 &&
         <Fragment>
           <HeadingThree
-            title={`Prix Total : ${props.cart.carts.reduce((acc, item) => acc + item.selectedQuantity * item.price, 0).toFixed(2)} €`}
+            title={`Prix Total : ${carts.reduce((acc, item) => acc + item.selectedQuantity * item.price, 0).toFixed(2)} €`}
           />
           <Button 
             className="btn"
             title="Valider le panier" 
             onClick={() => {
-              props.user.isLogged === false ?
-              props.history.push('/user/login') :
-              props.history.push('/order/shipping')
+              isLogged === false ?
+              history.push('/user/login') :
+              history.push('/order/shipping')
             }}
           />
         </Fragment>
@@ -115,16 +119,4 @@ const Cart = (props) => {
   )
 }
 
-const mapStateToProps = (store) => {
-  return {
-    user: store.user,
-    cart: store.cart
-  }
-}
-
-const mapDispatchToProps = {
-  addToCart,
-  removeFromCart
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Cart);
+export default Cart;

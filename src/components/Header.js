@@ -1,33 +1,34 @@
 import React, { useEffect, useState, Fragment } from 'react';
 import { Link } from 'react-router-dom';
-import { connect } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { logoutUser } from '../actions/user/userAction';
 import { deleteClass } from '../helpers/deleteClass';
 import '../assets/css/Header.css';
 
-const Header = (props) => {
-  // console.log("HEADER", props);
-  //console.log("HEADER", window);
-
+const Header = () => {
   const [showNav, setShowNav] = useState(false);
   const [clientWidth, setClientWidth] = useState(0);
   const [open, setOpen] = useState('');
 
-  // Calculate total Qte in cart
-  const totalQte = props.cart.carts.reduce((acc, item) => acc + item.selectedQuantity, 0);
+  const dispatch = useDispatch();
+  const userInfo = useSelector(state => state.user);
+  const cartList = useSelector(state => state.cart);
+  const { isLogged, infos } = userInfo;
+  const { carts } = cartList;;
 
-  // https://stackoverflow.com/questions/2172800/automatically-detect-web-browser-window-width-change
-  window.addEventListener("resize", function(e) {
-    setClientWidth(document.body.clientWidth);
-    if(clientWidth >= 665) {
-      // console.log("YES");
-      setShowNav(o => o = true);
-    }
-  })
+  // Calculate total Qty in cart
+  const totalQte = carts.reduce((acc, item) => acc + item.selectedQuantity, 0);
 
-  // Effect window's width
   useEffect(() => {
-    // Detect when window's changed
+    // https://stackoverflow.com/questions/2172800/automatically-detect-web-browser-window-width-change
+    window.addEventListener("resize", function(e) {
+      setClientWidth(document.body.clientWidth);
+      if(clientWidth >= 665) {
+        // console.log("YES");
+        setShowNav(o => o = true);
+      }
+    })
+
     setClientWidth(document.body.clientWidth);
     if(clientWidth >= 665) {
       // console.log("YES");
@@ -38,7 +39,7 @@ const Header = (props) => {
     totalQte > 0 && setOpen('open');
   }, [totalQte, clientWidth])
 
-  // Effect nav li selected
+  // CSS nav li selected
   useEffect(() => {
     const lis = document.querySelectorAll('nav ul li');
     for(let i = 0; i < lis.length; i++) {
@@ -87,7 +88,7 @@ const Header = (props) => {
             </li>
 
             {// User do not connected
-              props.user.isLogged === false &&
+              isLogged === false &&
               <Fragment>
               <li><Link to="/user/login">Connexion</Link></li>
               <li><Link to="/user/create">S'enregistrer</Link></li>
@@ -95,19 +96,19 @@ const Header = (props) => {
             }
             
             {// User do connected
-              props.user.isLogged !== false &&
+              isLogged !== false &&
               <Fragment>
                 <li><Link to="/user/profil">Mon espace</Link></li>
-                {props.user.infos.role === "Admin" && <li><Link to="/admin">Admin</Link></li>}
+                {infos && infos.role === "Admin" && <li><Link to="/admin">Admin</Link></li>}
                 <li>
-                  <Link
-                    to="/"
+                  <a
+                    href="/user/login"
                     onClick={() => {
-                      props.logoutUser();
+                      dispatch(logoutUser());
                     }}  
                   >
                     Déconnexion
-                  </Link>
+                  </a>
                 </li>
               </Fragment>
             }
@@ -119,16 +120,4 @@ const Header = (props) => {
   )
 }
 
-const mapStateToProps = (store) => {
-  return {
-    user: store.user,
-    cart: store.cart,
-    product: store.product
-  }
-}
-
-const mapDispatchToProps = {
-  logoutUser,
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Header);
+export default Header;

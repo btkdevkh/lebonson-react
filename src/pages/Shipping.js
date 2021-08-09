@@ -1,39 +1,43 @@
-import React, { useState } from 'react';
-import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
-import { createOrderCart } from '../api/order';
+import React, { useEffect, useState } from 'react';
+import { Link, useHistory } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { createOrder } from '../actions/order/orderAction';
 import Button from '../components/Button';
 import HeadingThree from '../components/HeadingThree';
 import '../assets/css/Shipping.css';
 
-const Shipping = (props) => {
+const Shipping = () => {
 
   const [payment, setPayment] = useState("Stripe");
-  
-  const onClickCheckOut = async () => {
-    // console.log(props.user.infos.id);
-    try {
-      const order = {
-        user_id: props.user.infos.id,
-        products: props.cart.carts,
-      }
-      
-      if(payment === "Stripe") {
-        const res = await createOrderCart(order);
-        // console.log(res);
-        if(res.status === 200) {
-          props.history.push(`/order/payment/${res.order_id}`)
-        }
-      } else {
-        console.log("Error");
-      }
-       
-    } catch (error) {
-      console.log(error);
+  const history = useHistory();
+
+  const dispatch = useDispatch();
+  const userState = useSelector(state => state.user);
+  const cartState = useSelector(state => state.cart);
+  const orderState = useSelector(state => state.order);
+  const { userInfos, isLogged } = userState;
+  const { carts } = cartState;
+  const { orders } = orderState;
+
+  useEffect(() => {
+    if(orders.affectedRows) {
+      history.push(`/order/payment/${orders.insertId}`);
     }
+    // eslint-disable-next-line
+  }, [orders, userInfos, isLogged])
+  
+  const onClickCheckOut = () => {
+    if(payment === "Stripe") {
+      const order = {
+        user_id: userInfos.id,
+        products: carts,
+      }
+
+      dispatch(createOrder(order));
+    } 
   }
 
-  const itemsPrice = props.cart.carts.reduce((acc, item) => acc + item.selectedQuantity * item.price, 0).toFixed(2);
+  const itemsPrice = carts.reduce((acc, item) => acc + item.selectedQuantity * item.price, 0).toFixed(2);
   const taxPrice = Number((0.15 * itemsPrice).toFixed(2));
   const totalPrice = (
     Number(itemsPrice) + 
@@ -64,8 +68,8 @@ const Shipping = (props) => {
         </tfoot>
         <tbody>
           {
-            props.cart.carts.length > 0 &&
-            props.cart.carts.map((item) => (
+            carts.length > 0 &&
+            carts.map((item) => (
               <tr key={item.id}>
                 <td>{item.title}</td>
                 <td>{item.selectedQuantity}</td>
@@ -78,13 +82,13 @@ const Shipping = (props) => {
       <HeadingThree title="Livrer chez" />
       {/* User infos */}
       {
-        props.user.infos !== null &&
+        userInfos !== null &&
         <div className="profil-user-infos">
-          <p>{props.user.infos.firstName} {props.user.infos.lastName}</p>
-          <p>{props.user.infos.address}</p>
-          <p>{props.user.infos.zip}, {props.user.infos.city}</p>
-          <p>{props.user.infos.email}</p>
-          <Link to={`/user/edit/${props.user.infos.id}`} title="Modifier"><i className="fas fa-pencil-alt"></i></Link>
+          <p>{userInfos.firstName} {userInfos.lastName}</p>
+          <p>{userInfos.address}</p>
+          <p>{userInfos.zip}, {userInfos.city}</p>
+          <p>{userInfos.email}</p>
+          <Link to={`/user/edit/${userInfos.id}`} title="Modifier"><i className="fas fa-pencil-alt"></i></Link>
         </div>
       }
       <HeadingThree title="Mode de paiment" />
@@ -107,7 +111,7 @@ const Shipping = (props) => {
       </div>
         
       {
-        props.user.isLogged === true &&
+        isLogged === true &&
         <Button
           className="btn mt"
           title="Valider la commande"
@@ -118,11 +122,4 @@ const Shipping = (props) => {
   )
 }
 
-const mapStateToProps = (store) => {
-  return {
-    user: store.user,
-    cart: store.cart
-  }
-}
-
-export default connect(mapStateToProps)(Shipping);
+export default Shipping;

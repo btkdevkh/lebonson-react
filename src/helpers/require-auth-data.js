@@ -1,92 +1,68 @@
-import React, { useEffect, useState } from 'react';
-import { connect } from 'react-redux';
+import React, { useEffect, useState, Fragment } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { Redirect } from 'react-router-dom';
-import { getAllProducts } from '../api/product';
 import { loadProducts } from '../actions/product/productAction';
-import { addToCart } from '../actions/cart/cartAction';
 import { connectUser } from '../actions/user/userAction';
-import { loadOrdersByUserId } from '../actions/order/orderAction';
 import { checkToken } from '../api/auth';
+import Loading from '../components/Loading';
+import HeadingThree from '../components/HeadingThree';
 
 const Hocs = (ChildComponent, withAuth = false) => {
 
   const RequireDataAuth = (props) => {
-    
     const [redirect, setRedirect] = useState(false);
 
-    useEffect(() =>{
-      // console.log("HOCS");
-      // console.log("PROPS", props);
+    const dispatch = useDispatch();
+    const productState = useSelector(state => state.product);
+    const userState = useSelector(state => state.user);
 
-      // Fetch products
-      const fetchData = async () => {
-        const results = await getAllProducts()
-        if(results.status === 200) {
-          props.loadProducts(results.products)
-        }
-      }
+    const { products, loading, error } = productState;
+    const { isLogged } = userState;
+    //console.log(products);
 
-      // If products's length is 0, then fetch products
-      if(props.product.products.length === 0) {
-        fetchData();
+    useEffect(() => {
+      // If there's no products, load products
+      if(products.length === 0) {
+        dispatch(loadProducts());
       }
 
       // User auth
       const token = window.localStorage.getItem('lebonson-token');
-      if(props.user.isLogged === false) {
+      if(isLogged === false) {
           if(token === null) {
               if(withAuth) {
                 setRedirect(redirect => redirect = true);
               }
           } else {
               // If there's a token
-              // Check token ...
               checkToken()
               .then(res => {
-                // console.log(res);
                 if(res.status !== 200) {
                   if(withAuth) {
                     setRedirect(redirect => redirect = true);
                   }
                 } else {
-                  // console.log(withAuth);
-                  res.user !== null && props.connectUser(res.user);
-
-                  //console.log(res);
-                  res.user !== null && props.loadOrdersByUserId(res.user.id);
+                  res.user !== null && dispatch(connectUser(res.user));
                 }
               })
           }
       }
 
-    // eslint-disable-next-line
-    }, [connectUser])
+      // eslint-disable-next-line
+    }, [dispatch])
 
     return (
-      <>
+      <Fragment>
         {redirect && <Redirect to="/user/login" />}
-        <ChildComponent {...props} />  
-      </>
+
+        {loading ? <Loading /> : error ? <HeadingThree title={error} className="txt-center txt-bg" /> :
+        <ChildComponent {...props} />}
+      </Fragment>
     )
 
   }
 
-  const mapStateToProps = (store) => {
-    return {
-      user: store.user,
-      product: store.product,
-      cart: store.cart,
-    }
-  }
-
-  const mapDispatchToProps = {
-    loadProducts,
-    addToCart,
-    connectUser,
-    loadOrdersByUserId
-  }
-
-  return connect(mapStateToProps, mapDispatchToProps)(RequireDataAuth);
+  return RequireDataAuth;
 }
 
 export default Hocs;

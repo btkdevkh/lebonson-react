@@ -1,13 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Fragment } from 'react';
 import { useHistory } from 'react-router-dom';
-import { connect } from 'react-redux';
-import { updateOneUser } from '../../api/user';
+import { useSelector, useDispatch } from 'react-redux';
+import { editUser } from '../../actions/user/userAction';
 import HeadingThree from '../HeadingThree';
-import { Fragment } from 'react';
 import Button from '../Button';
+import Loading from '../Loading';
 
-const EditUser = (props) => {
-  
+const EditUser = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -15,70 +14,53 @@ const EditUser = (props) => {
   const [zip, setZip] = useState("");
   const [city, setCity] = useState("");
 
-  const [error, setError] = useState("");
-  const [sucess, setSucess] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [showError, setShowError] = useState(false);
   const history = useHistory();
 
+  const dispatch = useDispatch();
+  const userState = useSelector(state => state.user);
+  const { isLogged, userInfos, error, msg } = userState;
+
   useEffect(() => {
-    if(props.user.infos !== null) {
-      const { firstName, lastName, email, address, zip, city } = props.user.infos;
+    if(isLogged !== false) {
+      const { firstName, lastName, email, address, zip, city } = userInfos;
       setFirstName(firstName);
       setLastName(lastName);
       setEmail(email);
       setAddress(address);
       setZip(zip);
       setCity(city);
-    } 
-    // eslint-disable-next-line
-  }, [])
-
-  const handleOnSubmit = async () => {
-    if(!firstName || !lastName || !email || !address || !zip || !city) {
-      setError("* Tous les champs sont requises");
-    } else {
-      try {
-        setError("");
-
-        const user = {
-          firstName,
-          lastName,
-          email,
-          address,
-          zip,
-          city
-        }
-        //console.log(user);
-
-        const response = await updateOneUser(props.user.infos.id, user)
-        // console.log(response);
-        
-        if(response.status === 200) {
-          setSucess("Vos informations a été modifié");
-
-          setTimeout(() => {
-            setSucess("")
-            history.push("/user/profil");
-          }, 2000);
-        }
-
-      } catch (error) {
-        console.log(error);
-      }
     }
+
+    const timer = setTimeout(() => {
+      if(msg) {
+        setLoading(true)
+        setShowError(false)
+        setTimeout(() => history.push('/user/profil'), 1000);
+      }
+    }, 3000);
+
+    // Clean up
+    return () => clearTimeout(timer);
+
+  }, [userInfos, isLogged, error, history, loading, msg])
+
+  const handleOnSubmit = async (e) => {
+    e.preventDefault();
+    setShowError(true);
+
+    const user = { firstName, lastName, email, address, zip, city  }
+    dispatch(editUser(user, userInfos.id))
   }
 
   return (
     <Fragment>
-      {
-        props.user.infos !== null &&
+      {loading && <Loading />}
+      { isLogged !== false &&
         <section className="form">
           <HeadingThree title="Modifiez vos informations" />
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleOnSubmit();
-            }}
-          >
+          <form onSubmit={handleOnSubmit}>
             <div>
               <input
                 type="text"
@@ -135,25 +117,16 @@ const EditUser = (props) => {
               />
             </div>
           </form>
-          <p className={`error`}>{error}</p>
-          <p className={`success`}>{sucess}</p>
-
+          <p className="error txt-center mt">{showError && error}</p>
+          <p className="success txt-center">{showError && msg}</p>
           <Button
             className="return btn mt"
             title="Retour au shopping"
-            onClick={() => props.history.push("/products")}
+            onClick={() => history.push("/products")}
           />
-        </section>
-      }
+        </section> }
     </Fragment>
   )
 }
 
-const mapStateToProps = (store) => {
-  return {
-    user: store.user,
-    cart: store.cart
-  }
-}
-
-export default connect(mapStateToProps)(EditUser);
+export default EditUser;

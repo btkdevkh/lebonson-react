@@ -1,7 +1,6 @@
 import React, { Fragment, useState, useEffect } from 'react';
 import { Redirect } from 'react-router-dom';
-import { connect } from 'react-redux';
-import { loadProducts } from '../../actions/product/productAction';
+import { useSelector, useDispatch } from 'react-redux';
 import { config } from '../../config';
 import { addToCart } from '../../actions/cart/cartAction';
 import HeadingThree from '../HeadingThree';
@@ -10,10 +9,15 @@ import { deleteClass } from '../../helpers/deleteClass';
 
 const ProductDetails = (props) => {
   const id = parseInt(props.match.params.id);
-  // console.log(id);
 
   const [selectedQty, setSelectedQty] = useState(0);
   const [redirect, setRedirect] = useState(false);
+
+  const dispatch = useDispatch();
+  const productsList = useSelector(state => state.product);
+  const cartsList = useSelector(state => state.cart);
+  const { products } = productsList;
+  const { carts } = cartsList;
 
   const handleClickPlus = () => {
     setSelectedQty(selectedQty + 1);
@@ -23,12 +27,11 @@ const ProductDetails = (props) => {
     setSelectedQty(selectedQty - 1);
   }
 
-  let sameProductId;
-  sameProductId = props.product.products.filter(product => {
+  const productDetails = products.filter(product => {
     return product.id === id;
   })
 
-  // Effect nav li selected
+  // CSS nav li selected
   useEffect(() => {
     const lis = document.querySelectorAll('nav ul li');
     deleteClass(lis, 'selected');
@@ -42,8 +45,8 @@ const ProductDetails = (props) => {
     <Fragment>
       {redirect && <Redirect to="/products/cart"/>}
       {
-        sameProductId &&
-        sameProductId.map(product => (
+        productDetails &&
+        productDetails.map(product => (
           <section className="products details" key={product.id}>
             <HeadingThree title="Détails du produit" />
               <article className="product-item details">
@@ -101,7 +104,7 @@ const ProductDetails = (props) => {
                       if(selectedQty < 1) {
                         console.log("NO");
                       } else {
-                        props.addToCart(id, selectedQty, props.cart.carts);
+                        dispatch(addToCart(id, selectedQty, carts));
                         
                         setSelectedQty(0);
                         setRedirect(true);
@@ -126,15 +129,4 @@ const ProductDetails = (props) => {
   )
 }
 
-const mapStateToProps = (store) => {
-  return {
-    product: store.product
-  }
-}
-
-const mapDispatchToProps = {
-  loadProducts,
-  addToCart,
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(ProductDetails);
+export default ProductDetails;
