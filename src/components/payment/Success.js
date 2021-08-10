@@ -1,12 +1,17 @@
 import React, { useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
+import { useSelector } from 'react-redux'
 import Button from '../Button';
 import '../../assets/css/Success.css';
 
-const Success = (props) => {
-  // console.log(props.cart);
+const Success = () => {
+  const history = useHistory();
+
+  const cartState = useSelector(state => state.cart);
+  const { carts } = cartState;
 
   useEffect(() => {
-    if(props.cart.carts.length > 0) {
+    if(carts.length > 0) {
       window.localStorage.removeItem('products-in-cart');
       window.location.reload();
     }
@@ -21,7 +26,7 @@ const Success = (props) => {
       <Button
         className="btn mt"
         title="Retour à l'accueil"
-        onClick={() => props.history.push('/')}
+        onClick={() => history.push('/')}
       />
     </section>
   );

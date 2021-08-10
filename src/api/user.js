@@ -32,7 +32,7 @@ export const updateOneUser = async (data, id) => {
   return response.data;
 }
 
-export const updateOneUserRole = async (id, data) => {
+export const updateOneUserRole = async (data, id) => {
   const token = window.localStorage.getItem("lebonson-token");
   const response = await axios.put(config.api_url+"/api/v1/user/update/role/"+id, data, {
     headers: { "x-access-token": token }

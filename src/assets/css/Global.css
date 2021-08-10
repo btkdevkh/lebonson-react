@@ -18,7 +18,7 @@
 
 body {
   scroll-behavior: smooth;
-  min-width: 320px;
+  min-width: 375px;
   font-weight: 400;
   line-height: 1.6;
   color: var(--third-color);

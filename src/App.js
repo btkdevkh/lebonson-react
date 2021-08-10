@@ -18,6 +18,7 @@ import ForgotPassword from './components/user/ForgotPassword';
 import ResetPassword from './components/user/ResetPassword';
 import Success from './components/payment/Success';
 import Admin from './pages/Admin';
+import NotFound from './pages/NotFound';
 
 function App() {
   return (
@@ -40,6 +41,7 @@ function App() {
           <Route exact path="/about" component={RequireDataAuth(About)} />
           <Route exact path="/orders/success" component={RequireDataAuth(Success, true)} />
           <Route exact path="/admin" component={RequireDataAuth(Admin, true)} />
+          <Route exact path="*" component={RequireDataAuth(NotFound)} />
         </Switch>
       </main>
       <Footer />

@@ -1,78 +1,77 @@
 import { 
   CONNECT_USER, 
-  EDIT_USER_FAIL, 
-  EDIT_USER_REQUEST, 
-  EDIT_USER_SUCCESS, 
-  LOGIN_USER_FAIL, 
-  LOGIN_USER_REQUEST, 
-  LOGIN_USER_SUCCESS, 
-  LOGOUT_USER, 
-  REGISTER_USER_FAIL, 
-  REGISTER_USER_REQUEST, 
-  REGISTER_USER_SUCCESS 
+  LOGIN_USER,
+  LOGOUT_USER,
+  REGISTER_USER,
+  EDIT_USER,
+  USER_LIST,
+  LOGIN_USER_FAIL,
+  USER_ROLE_UPDATE
 } from '../actions/user/actions-types';
 
-const initialState = {
+const initialState = { 
   userInfos: null,
   isLogged: false,
-}
+  users: [],
+  user: null
+};
 
-export const userReducer = (state = initialState, action) => {
+const userReducer = (state = initialState, action) => {
   switch (action.type) {
     case CONNECT_USER:
-      return {
-        userInfos: action.payload,
-        isLogged: true,
+      return { 
+        ...state,
+        userInfos: action.payload, 
+        isLogged: true 
       }
-    case LOGIN_USER_REQUEST:
-      return {
-        userInfos: [],
-        isLogged: false,
-      }
-    case LOGIN_USER_SUCCESS:
-      return {
-        userInfos: action.payload,
-        isLogged: true,
+    case LOGIN_USER:
+      return { 
+        ...state,
+        userInfos: action.payload, 
+        isLogged: true
       }
     case LOGIN_USER_FAIL:
-      return {
-        isLogged: false,
-        error: action.payload,
+      return { 
+        ...state,
+        error: action.payload
       }
     case LOGOUT_USER:
-      return {
-        initialState,
-      }
-    case REGISTER_USER_REQUEST:
       return { 
-        isLogged: false 
+        ...state,
+        userInfos: action.payload, 
+        isLogged: false
       }
-    case REGISTER_USER_SUCCESS:
-      return {
-        userInfos: action.payload,
-        isLogged: true,
-        msg: action.msg
-      }
-    case REGISTER_USER_FAIL:
-      return {
-        isLogged: false,
-        error: action.payload,
-      }
-    case EDIT_USER_REQUEST:
+    case REGISTER_USER:
       return { 
-        isLogged: false 
+        ...state,
+        user: action.payload,
+        success: action.success,
+        error: action.error
       }
-    case EDIT_USER_SUCCESS:
-      return {
-        userInfos: action.payload,
+    case EDIT_USER:
+      return { 
+        ...state,
+        user: action.payload, 
         isLogged: true,
-        msg: action.msg
+        success: action.success,
+        error: action.error
       }
-    case EDIT_USER_FAIL:
-      return {
-        isLogged: false,
-        error: action.payload,
+    case USER_LIST:
+      return { 
+        ...state,
+        users: action.payload, 
+        isLogged: true, 
+        msg: action.msg 
+      }
+    case USER_ROLE_UPDATE:
+      return { 
+        ...state,
+        user: action.payload,
+        isLogged: true,
+        status: action.status,
+        error: action.error
       }
     default: return state
   }
 }
+export default userReducer;

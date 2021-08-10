@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-import { Redirect } from 'react-router-dom';
-import { getAllProducts, saveImage, saveProduct } from '../../api/product';
+import { useDispatch, useSelector } from 'react-redux';
+import { createProduct, loadProducts } from '../../actions/product/productAction';
 import HeadingThree from '../HeadingThree';
-import { connect } from 'react-redux';
-import { loadProducts } from '../../actions/product/productAction';
+import { saveImage } from '../../api/product';
 
-const AddProduct = (props) => {
+const AddProduct = ({ setShowAddForm }) => {
 
   const [title, setTitle] = useState("");
   const [price, setPrice] = useState("");
@@ -13,91 +12,54 @@ const AddProduct = (props) => {
   const [description, setDescription] = useState("");
   const [image, setImage] = useState(null);
 
-  const [error, setError] = useState("");
+  const dispatch = useDispatch();
+  
+  const productCreate = useSelector(state => state.product);
+  const { error } = productCreate;
 
-  // eslint-disable-next-line
-  const [sucess, setSucess] = useState("");
-  const [redirect, setRedirect] = useState(false);
+  const handleOnSubmit = (e) => {
+    e.preventDefault();
+    setShowAddForm(true);
 
-  const handleOnSubmit = async () => {
-    console.log(123);
+    // Save image first
+    saveImage(image)
+    .then(res => {
+      if(res.status === 201) {
+        const product = {
+          title,
+          price,
+          image: res.url,
+          quantity,
+          description
+        }
 
-    if(!title || !price || !quantity || !description) {
-      setError("* Champs Obligatoire");
-    } else {
-      try {
-        setError("");
+        // Then save product
+        dispatch(createProduct(product));
+        setShowAddForm(false);
+        dispatch(loadProducts());
 
-        console.log("IMAGE" ,image);
+      } else {
+        const product = {
+          title,
+          price,
+          image: 'no-picture.png',
+          quantity,
+          description
+        }
 
-        saveImage(image)
-        .then(res => {
-          if(res.status === 200) {
-            console.log(res.url);
-            
-            const product = {
-              title,
-              price,
-              image: res.url,
-              quantity,
-              description
-            }
-            console.log(product);
-
-            saveProduct(product)
-            .then(res => {
-              if(res.status === 200) {
-                console.log("OK");
-                getAllProducts()
-                .then(res => {
-                  props.loadProducts(res.products)
-                  setRedirect(true);
-                  props.setShowAddForm(false);
-                })
-              }
-            })
-          } else {
-            const product = {
-              title,
-              price,
-              image: "no-picture.png",
-              quantity,
-              description
-            }
-            console.log(product);
-
-            saveProduct(product)
-            .then(res => {
-              if(res.status === 200) {
-                console.log("OK");
-                getAllProducts()
-                .then(res => {
-                  props.loadProducts(res.products)
-                  setRedirect(true);
-                  props.setShowAddForm(false);
-                })
-              }
-            })
-          }
-
-        })
-
-      } catch (error) {
-        console.log(error);
+        // Then save product
+        dispatch(createProduct(product));
+        setShowAddForm(false);
+        dispatch(loadProducts());
       }
-    }
+    })
+    
   }
 
   return (
     <section className="form">
-      {redirect && <Redirect to="/admin" />}
       <HeadingThree title="Ajouter un produit" className="txt-center" />
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          handleOnSubmit();
-        }}
-      >
+      <form onSubmit={handleOnSubmit}>
         <div>
           <input
             type="text"
@@ -135,7 +97,7 @@ const AddProduct = (props) => {
             id="file"
             type="file"
             onChange={(e) => {
-              console.log(e.target.files[0])
+              // console.log(e.target.files[0])
               setImage(e.target.files[0])
             }}
           />
@@ -147,18 +109,9 @@ const AddProduct = (props) => {
           />
         </div>
       </form>
-      <p className={`error`}>{error}</p>
-      <p className={`success`}>{sucess}</p>
+      <p className="error txt-center mt">{error && error}</p>
     </section>
   )
 }
 
-const mapStateToProps = (store) => {
-  return {}
-}
-
-const mapDispatchToProps = {
-  loadProducts
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(AddProduct);
+export default AddProduct;

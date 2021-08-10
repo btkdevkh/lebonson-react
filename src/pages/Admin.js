@@ -1,45 +1,45 @@
 import React, { useEffect, useState } from 'react';
-import { Redirect } from 'react-router-dom'
+import { useHistory } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { loadAllusers } from '../actions/user/userAction';
+import { deleteProduct, loadProducts } from '../actions/product/productAction';
 import HeadingThree from '../components/HeadingThree';
 import Button from '../components/Button';
 import AddProduct from '../components/admin/AddProduct';
 import EditProduct from '../components/admin/EditProduct';
-import { deleteOneProduct, getAllProducts } from '../api/product';
-import { connect } from 'react-redux';
-import { loadProducts } from '../actions/product/productAction';
-import { getAllUsers } from '../api/user';
 import EditUserRole from '../components/admin/EditUserRole';
 import '../assets/css/Admin.css';
 
-const Admin = (props) => {
-  console.log(props);
+const Admin = () => {
 
   const [showAddForm, setShowAddForm] = useState(false);
   const [showEditForm, setShowEditForm] = useState(false);
   const [id, setId] = useState(null);
-  const [redirect, setRedirect] = useState(false);
-  const [users, setUsers] = useState([]);
+  const history = useHistory();
 
-  useEffect(() => {
-    if(props.user.infos !== null) {
-      if(props.user.infos.role !== "Admin") {
+  const dispatch = useDispatch();
+
+  const userState = useSelector(state => state.user);
+  const { userInfos, isLogged, users } = userState;
+
+  const productState = useSelector(state => state.product);
+  const { products } = productState;
+
+  useEffect(() => { 
+    //dispatch(loadAllusers());
+    users.length === 0 && dispatch(loadAllusers());
+
+    if(isLogged) {
+      if(userInfos.role !== "Admin") {
         //console.log("TRUE");
-        props.history.push("/");
-      } else {
-        getAllUsers()
-        .then(res => {
-          console.log(res);
-          setUsers(res.users);
-        })
+        history.push("/");
       }
     }
-  }, [props])
+  }, [history, isLogged, users, userInfos, dispatch])
 
   return (
     <section className="admin">
-      {redirect && <Redirect to="/admin" />}
       <HeadingThree title="Administration" className="txt-center" />
-
       <table className="mb">
         <thead>
           <tr>
@@ -50,7 +50,7 @@ const Admin = (props) => {
         </thead>
         <tbody>
           {
-            users.length > 0 &&
+            users &&
             users.map((user) => (
               <tr key={user.id}>
                 <td>{user.firstName}</td>
@@ -73,8 +73,8 @@ const Admin = (props) => {
         </thead>
         <tbody>
           {
-            props.product.products.length > 0 &&
-            props.product.products.map((item) => (
+            products &&
+            products.map((item) => (
               <tr key={item.id}>
                 <td>{item.title}</td>
                 <td>{item.quantity}</td>
@@ -82,7 +82,6 @@ const Admin = (props) => {
                 <td
                   style={{cursor: "pointer", color: "orange"}}
                   onClick={() => {
-                    console.log(123);
                     setId(item.id);
                     setShowAddForm(false)
                     setShowEditForm(true)
@@ -94,15 +93,8 @@ const Admin = (props) => {
                   style={{cursor: "pointer", color: "#ff0000"}}
                   onClick={() => {
                     if(window.confirm("Voulez vous supprimer ce produit ?")) {
-                      deleteOneProduct(item.id)
-                      .then(res => {
-                        console.log(res);
-                        getAllProducts()
-                        .then(res => {
-                          props.loadProducts(res.products)
-                          setRedirect(true);
-                        })
-                      })
+                      dispatch(deleteProduct(item.id));
+                      dispatch(loadProducts());
                     }
                   }}
                 >
@@ -124,22 +116,10 @@ const Admin = (props) => {
       />
       
       {showAddForm && <AddProduct setShowAddForm={setShowAddForm} />}
-      {showEditForm && <EditProduct id={id} setShowEditForm={setShowEditForm} />}
+      {showEditForm && <EditProduct products={products} id={id} setShowEditForm={setShowEditForm} />}
 
     </section>
   )
 }
 
-const mapStateToProps = (store) => {
-  return {
-    product: store.product
-  }
-}
-
-const mapDispatchToProps = {
-  loadProducts
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Admin);
-
-// <option value={user.role}>{user.role}</option>
+export default Admin;

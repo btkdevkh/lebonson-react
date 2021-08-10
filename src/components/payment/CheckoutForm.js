@@ -3,21 +3,24 @@ import { CardElement } from '@stripe/react-stripe-js';
 import axios from "axios";
 import { config } from '../../config';
 import { Redirect } from 'react-router-dom';
-import { connect } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { loadProducts } from '../../actions/product/productAction';
 
-// CB form
 const CheckoutForm = (props) => {
-  // console.log("CHECKFORM", props);
     
   const [redirect, setRedirect] = useState(false);
+
+  const dispatch = useDispatch();
+
+  const userState = useSelector(state => state.user);
+  const { userInfos } = userState;
   
-  const handleSubmit = async (event) => {
-      event.preventDefault();
+  const handleSubmit = async (e) => {
+      e.preventDefault();
       props.setLoading(true);
       
       let data = {
-        email: props.user.infos.email,
+        email: userInfos.email,
         order_id: props.orderId
       }
       // console.log(data);
@@ -33,7 +36,7 @@ const CheckoutForm = (props) => {
         payment_method: {
           card: props.elements.getElement(CardElement),
           billing_details: {
-            email: props.user.infos.email
+            email: userInfos.email
           },
         },
       });
@@ -52,11 +55,12 @@ const CheckoutForm = (props) => {
             order_id: props.orderId,
             status: "Paid"
           }
+
           // change status to paid
           axios.put(config.api_url+"/api/v1/order/validate", data, { headers: { 'x-access-token': token } })
           .then((response)=>{
             //console.log(response);
-            props.loadProducts(response.data.products);
+            dispatch(loadProducts(response.data.products));
             setRedirect(true);
           })
         }
@@ -98,15 +102,4 @@ const CheckoutForm = (props) => {
   );
 }
 
-const mapStateToProps = (store) => {
-  return {
-  	user: store.user,
-    cart: store.cart,
-    order: store.order
-  }
-}
-const mapDispatchToProps = {
-	loadProducts,
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(CheckoutForm);
+export default CheckoutForm;

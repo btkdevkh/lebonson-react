@@ -4,9 +4,10 @@ import { useSelector, useDispatch } from 'react-redux';
 import { editUser } from '../../actions/user/userAction';
 import HeadingThree from '../HeadingThree';
 import Button from '../Button';
-import Loading from '../Loading';
+//import Loading from '../Loading';
 
 const EditUser = () => {
+
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -14,17 +15,25 @@ const EditUser = () => {
   const [zip, setZip] = useState("");
   const [city, setCity] = useState("");
 
-  const [loading, setLoading] = useState(false);
-  const [showError, setShowError] = useState(false);
+    const [errorMsg, setErrorMsg] = useState(false);
   const history = useHistory();
 
   const dispatch = useDispatch();
-  const userState = useSelector(state => state.user);
-  const { isLogged, userInfos, error, msg } = userState;
+
+  const userAuth = useSelector(state => state.user);
+  const { isLogged, userInfos, success, error } = userAuth;
 
   useEffect(() => {
-    if(isLogged !== false) {
-      const { firstName, lastName, email, address, zip, city } = userInfos;
+    if(isLogged) {
+      const { 
+        firstName, 
+        lastName, 
+        email, 
+        address, 
+        zip, 
+        city 
+      } = userInfos;
+
       setFirstName(firstName);
       setLastName(lastName);
       setEmail(email);
@@ -34,30 +43,33 @@ const EditUser = () => {
     }
 
     const timer = setTimeout(() => {
-      if(msg) {
-        setLoading(true)
-        setShowError(false)
-        setTimeout(() => history.push('/user/profil'), 1000);
-      }
+      setErrorMsg(false);
     }, 3000);
 
     // Clean up
     return () => clearTimeout(timer);
 
-  }, [userInfos, isLogged, error, history, loading, msg])
+  }, [userInfos, isLogged])
 
-  const handleOnSubmit = async (e) => {
+  const handleOnSubmit = (e) => {
     e.preventDefault();
-    setShowError(true);
+    setErrorMsg(true);
 
-    const user = { firstName, lastName, email, address, zip, city  }
-    dispatch(editUser(user, userInfos.id))
+    const user = { 
+      firstName, 
+      lastName, 
+      email, 
+      address, 
+      zip, 
+      city 
+    }
+
+    dispatch(editUser(user, userInfos.id));
   }
 
   return (
     <Fragment>
-      {loading && <Loading />}
-      { isLogged !== false &&
+      { isLogged &&
         <section className="form">
           <HeadingThree title="Modifiez vos informations" />
           <form onSubmit={handleOnSubmit}>
@@ -117,8 +129,8 @@ const EditUser = () => {
               />
             </div>
           </form>
-          <p className="error txt-center mt">{showError && error}</p>
-          <p className="success txt-center">{showError && msg}</p>
+          <p className="error txt-center mt">{errorMsg && error}</p>
+          <p className="success txt-center">{errorMsg && success}</p>
           <Button
             className="return btn mt"
             title="Retour au shopping"
@@ -130,3 +142,5 @@ const EditUser = () => {
 }
 
 export default EditUser;
+
+//{success && <Loading />}

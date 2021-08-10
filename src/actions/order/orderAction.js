@@ -1,23 +1,18 @@
 import { 
-  LOAD_ORDERS_REQUEST, 
-  LOAD_ORDERS_SUCCESS, 
-  LOAD_ORDERS_FAIL,
-  CREATE_ORDER_REQUEST,
-  CREATE_ORDER_FAIL,
-  CREATE_ORDER_SUCCESS
+  ORDER_LIST,
+  ORDER_CREATE
 } from './actions-types';
-import { getOrdersByUsertId, createOrderCart } from '../../api/order';
+import { 
+  getOrdersByUsertId, 
+  createOrderCart 
+} from '../../api/order';
 
 export const loadOrdersByUserId = id => async dispatch => {
-
   try {
-    dispatch({ type: LOAD_ORDERS_REQUEST })
-
     const res = await getOrdersByUsertId(id);
-    // console.log(res);
     if(res.status === 200) {
       dispatch({
-        type: LOAD_ORDERS_SUCCESS,
+        type: ORDER_LIST,
         payload: res.ordersByUserId
       })
 
@@ -27,22 +22,18 @@ export const loadOrdersByUserId = id => async dispatch => {
 
   } catch(error) {
     dispatch({
-      type: LOAD_ORDERS_FAIL,
+      type: ORDER_LIST,
       payload: error.message
     })
   }
 }
 
 export const createOrder = data => async dispatch => {
-
   try {
-    dispatch({ type: CREATE_ORDER_REQUEST })
-
     const res = await createOrderCart(data);
-    //console.log(res);
     if(res.status === 200) {
       dispatch({
-        type: CREATE_ORDER_SUCCESS,
+        type: ORDER_CREATE,
         payload: res.order
       })
 
@@ -52,9 +43,8 @@ export const createOrder = data => async dispatch => {
      
   } catch (error) {
     dispatch({
-      type: CREATE_ORDER_FAIL,
+      type: ORDER_CREATE,
       payload: error.message
     })
   }
-
 }

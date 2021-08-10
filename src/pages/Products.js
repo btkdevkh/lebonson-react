@@ -6,8 +6,8 @@ import '../assets/css/Products.css';
 
 const Products = () => {
 
-  const productState = useSelector(state => state.product);
-  const { products } = productState;
+  const productList = useSelector(state => state.product);
+  const { products } = productList;
 
   return (
     <section className="products">

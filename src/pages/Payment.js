@@ -9,10 +9,12 @@ const Payment = (props) => {
   const order_id = Number(props.match.params.id);
 
   const dispatch = useDispatch();
+
   const userState = useSelector(state => state.user);
-  const productByOrderState = useSelector(state => state.productByOrder);
   const { isLogged } = userState;
-  const { products } = productByOrderState;
+
+  const productState = useSelector(state => state.product);
+  const { productsByOrder } = productState;
 
   useEffect(() => {
     dispatch(loadProductsByOrderId(order_id));
@@ -29,7 +31,7 @@ const Payment = (props) => {
     }
   }
 
-  const itemsPrice = products.reduce((acc, item) => acc + item.total, 0).toFixed(2);
+  const itemsPrice = productsByOrder.reduce((acc, item) => acc + item.total, 0).toFixed(2);
   const taxPrice = Number((0.15 * itemsPrice).toFixed(2));
   const totalPrice = (
     Number(itemsPrice) + 
@@ -60,8 +62,8 @@ const Payment = (props) => {
         </tfoot>
         <tbody>
           {
-            products.length > 0 &&
-            products.map((item, idx) => (
+            productsByOrder &&
+            productsByOrder.map((item, idx) => (
               <tr key={idx}>
                 <td>{item.title}</td>
                 <td>{item.selectedQty}</td>
@@ -73,7 +75,7 @@ const Payment = (props) => {
       </table>
 
       { 
-        isLogged === true &&
+        isLogged &&
         <Fragment>
           <PayProvider order_id={order_id} />
         </Fragment> 

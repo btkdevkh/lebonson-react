@@ -9,17 +9,16 @@ import '../../assets/css/Profil.css';
 const Profil = () => {
   
   const dispatch = useDispatch();
+
   const userState = useSelector(state => state.user);
-  const orderState = useSelector(state => state.order);
   const { isLogged, userInfos } = userState;
+
+  const orderState = useSelector(state => state.order);
   const { orders } = orderState;
 
   useEffect(() => {
-    if(isLogged !== false) {
-      dispatch(loadOrdersByUserId(userInfos.id))
-    }
-    // eslint-disable-next-line
-  }, [isLogged, userInfos])
+    isLogged && dispatch(loadOrdersByUserId(userInfos.id));
+  }, [isLogged, userInfos, dispatch])
 
   return (
     <section className="profil">
@@ -27,7 +26,7 @@ const Profil = () => {
 
       {/* User infos */}
       {
-        isLogged !== false &&
+        isLogged &&
         <div className="profil-user-infos">
           <h4>Mes cordonnées :</h4>
           <p>Chez {userInfos.firstName} {userInfos.lastName}</p>
@@ -50,7 +49,7 @@ const Profil = () => {
         </thead>
         <tbody>
           {
-            isLogged !== false &&
+            isLogged &&
             orders.map(order => {
               if(order.status === "Paid") {
                 return (

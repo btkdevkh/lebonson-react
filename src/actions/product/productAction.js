@@ -1,21 +1,26 @@
 import { 
-  LOAD_PRODUCTS_REQUEST, 
-  LOAD_PRODUCTS_SUCCESS, 
-  LOAD_PRODUCTS_FAIL,
-  LOAD_PRODUCTS_BY_ORDER_ID_REQUEST,
-  LOAD_PRODUCTS_BY_ORDER_ID_SUCCESS,
-  LOAD_PRODUCTS_BY_ORDER_ID_FAIL
+  PRODUCT_LIST,
+  PRODUCT_DETAILS,
+  PRODUCT_BY_ORDER_ID,
+  PRODUCT_CREATE,
+  PRODUCT_UPDATE,
+  PRODUCT_DELETE
 } from './actions-types';
-import { getAllProducts, getProductsByOrderId } from '../../api/product';
+import { 
+  getAllProducts, 
+  getOneProduct, 
+  getProductsByOrderId, 
+  saveProduct, 
+  updateOneProduct,
+  deleteOneProduct
+} from '../../api/product';
 
 export const loadProducts = () => async dispatch => {
   try {
-    dispatch({ type: LOAD_PRODUCTS_REQUEST })
-
     const res = await getAllProducts();
     if(res.status === 200) {
       dispatch({
-        type: LOAD_PRODUCTS_SUCCESS,
+        type: PRODUCT_LIST,
         payload: res.products
       })
     } else {
@@ -25,7 +30,27 @@ export const loadProducts = () => async dispatch => {
   } catch (error) {
     console.log(error);
     dispatch({
-      type: LOAD_PRODUCTS_FAIL,
+      type: PRODUCT_LIST,
+      payload: error.message
+    })
+  }
+}
+
+export const loadProductDetails = id => async dispatch => {
+  try {
+    const res = await getOneProduct(id);
+    if(res.status === 200) {
+      dispatch({
+        type: PRODUCT_DETAILS,
+        payload: res.product
+      })
+
+    } else {
+      throw new Error(res.msg)
+    }
+  } catch (error) {
+    dispatch({
+      type: PRODUCT_DETAILS,
       payload: error.message
     })
   }
@@ -33,13 +58,10 @@ export const loadProducts = () => async dispatch => {
 
 export const loadProductsByOrderId = id => async dispatch => {
   try {
-    dispatch({ type: LOAD_PRODUCTS_BY_ORDER_ID_REQUEST })
-
     const res = await getProductsByOrderId(id);
-    //console.log(res);
     if(res.status === 200) {
       dispatch({
-        type: LOAD_PRODUCTS_BY_ORDER_ID_SUCCESS,
+        type: PRODUCT_BY_ORDER_ID,
         payload: res.productsByOrderId
       })
     } else {
@@ -47,9 +69,68 @@ export const loadProductsByOrderId = id => async dispatch => {
     }
 
   } catch (error) {
-    console.log(error);
     dispatch({
-      type: LOAD_PRODUCTS_BY_ORDER_ID_FAIL,
+      type: PRODUCT_BY_ORDER_ID,
+      payload: error.message
+    })
+  }
+}
+
+export const createProduct = data => async dispatch => {
+  try {
+    const res = await saveProduct(data);
+    if(res.status === 201) {
+      dispatch({
+        type: PRODUCT_CREATE,
+        payload: res.product
+      })
+
+    } else {
+      throw new Error(res.msg)
+    }
+  } catch (error) {
+    dispatch({
+      type: PRODUCT_CREATE,
+      payload: error.message
+    })
+  }
+}
+
+export const editProduct = (data, id) => async dispatch => {
+  try {
+    const res = await updateOneProduct(data, id);
+    if(res.status === 200) {
+      dispatch({
+        type: PRODUCT_UPDATE,
+        payload: res.product
+      })
+
+    } else {
+      throw new Error(res.msg)
+    }
+  } catch (error) {
+    dispatch({
+      type: PRODUCT_UPDATE,
+      payload: error.message
+    })
+  }
+}
+
+export const deleteProduct = id => async dispatch => {
+  try {
+    const res = await deleteOneProduct(id);
+    if(res.status === 200) {
+      dispatch({
+        type: PRODUCT_DELETE,
+        payload: null
+      })
+
+    } else {
+      throw new Error(res.msg)
+    }
+  } catch (error) {
+    dispatch({
+      type: PRODUCT_DELETE,
       payload: error.message
     })
   }

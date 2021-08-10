@@ -11,9 +11,11 @@ const Header = () => {
   const [open, setOpen] = useState('');
 
   const dispatch = useDispatch();
-  const userInfo = useSelector(state => state.user);
+  
+  const userAuth = useSelector(state => state.user);
+  const { isLogged, userInfos } = userAuth;
+
   const cartList = useSelector(state => state.cart);
-  const { isLogged, infos } = userInfo;
   const { carts } = cartList;;
 
   // Calculate total Qty in cart
@@ -88,7 +90,7 @@ const Header = () => {
             </li>
 
             {// User do not connected
-              isLogged === false &&
+              !isLogged &&
               <Fragment>
               <li><Link to="/user/login">Connexion</Link></li>
               <li><Link to="/user/create">S'enregistrer</Link></li>
@@ -96,10 +98,10 @@ const Header = () => {
             }
             
             {// User do connected
-              isLogged !== false &&
+              isLogged &&
               <Fragment>
                 <li><Link to="/user/profil">Mon espace</Link></li>
-                {infos && infos.role === "Admin" && <li><Link to="/admin">Admin</Link></li>}
+                {userInfos && userInfos.role === "Admin" && <li><Link to="/admin">Admin</Link></li>}
                 <li>
                   <a
                     href="/user/login"
@@ -112,6 +114,7 @@ const Header = () => {
                 </li>
               </Fragment>
             }
+
             <li><Link to="/about">À propos</Link></li>
           </ul>
         </nav>

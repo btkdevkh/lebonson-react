@@ -14,10 +14,12 @@ const ProductDetails = (props) => {
   const [redirect, setRedirect] = useState(false);
 
   const dispatch = useDispatch();
-  const productsList = useSelector(state => state.product);
-  const cartsList = useSelector(state => state.cart);
-  const { products } = productsList;
-  const { carts } = cartsList;
+  
+  const productState = useSelector(state => state.product);
+  const { products } = productState;
+
+  const cartState = useSelector(state => state.cart);
+  const { carts } = cartState;
 
   const handleClickPlus = () => {
     setSelectedQty(selectedQty + 1);

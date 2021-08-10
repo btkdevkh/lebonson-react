@@ -13,12 +13,12 @@ const Hocs = (ChildComponent, withAuth = false) => {
     const [redirect, setRedirect] = useState(false);
 
     const dispatch = useDispatch();
-    const productState = useSelector(state => state.product);
-    const userState = useSelector(state => state.user);
+    
+    const productList = useSelector(state => state.product);
+    const { products, loading, error } = productList;
 
-    const { products, loading, error } = productState;
-    const { isLogged } = userState;
-    //console.log(products);
+    const userAuth = useSelector(state => state.user);
+    const { isLogged } = userAuth;
 
     useEffect(() => {
       // If there's no products, load products

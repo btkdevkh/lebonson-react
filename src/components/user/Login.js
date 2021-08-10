@@ -11,12 +11,13 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const [showError, setShowError] = useState(false);
+  const [errorMsg, setErrorMsg] = useState(false);
   const history = useHistory();
 
   const dispatch = useDispatch();
-  const userState = useSelector(state => state.user);
-  const { isLogged, error } = userState;
+
+  const userAuth = useSelector(state => state.user);
+  const { isLogged, error } = userAuth;
   
   useEffect(() => {
     if(isLogged) {
@@ -25,16 +26,18 @@ const Login = () => {
       }, 1000);
     }
 
-    const timer = setTimeout(() => setShowError(false), 3000);
+    const timer = setTimeout(() => setErrorMsg(false), 3000);
+    // Clean up
     return () => clearTimeout(timer);
 
-  }, [history, isLogged, error])
+  }, [dispatch, userAuth, isLogged, history, errorMsg])
 
-  const handleOnSubmit = () => {
-    setShowError(true);
+  const handleOnSubmit = (e) => {
+    e.preventDefault();
+    setErrorMsg(true);
 
     const user = { email, password };
-    dispatch(loginUser(user))
+    dispatch(loginUser(user));
   }
 
   return (
@@ -42,12 +45,7 @@ const Login = () => {
       {isLogged && <Loading />}
       <section className="form">
         <HeadingThree title="Connexion" />
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleOnSubmit();
-          }}
-        >
+        <form onSubmit={handleOnSubmit}>
           <div>
             <input
               placeholder="Email"
@@ -79,7 +77,7 @@ const Login = () => {
         >
           <i className="fas fa-key"></i> Mot de passe oublié ? 
         </Link>
-        <p className="error txt-center">{showError && error}</p>
+        <p className="error txt-center">{errorMsg && error}</p>
       </section>
     </Fragment>
   )

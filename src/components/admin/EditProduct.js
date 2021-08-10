@@ -1,121 +1,75 @@
 import React, { useState, useEffect } from 'react';
-import { Redirect } from 'react-router-dom';
-import { getOneProduct, saveImage, updateOneProduct, getAllProducts } from '../../api/product';
+import { useSelector, useDispatch } from 'react-redux';
+import { editProduct, loadProducts 
+} from '../../actions/product/productAction';
+import { saveImage } from '../../api/product';
 import HeadingThree from '../HeadingThree';
-import { connect } from 'react-redux';
-import { loadProducts } from '../../actions/product/productAction';
 
-const EditProduct = (props) => {
-
-  //console.log("ID", props.id);
-
+const EditProduct = ({ id, products, setShowEditForm }) => {
   const [title, setTitle] = useState("");
   const [price, setPrice] = useState("");
   const [quantity, setQuantity] = useState("");
   const [description, setDescription] = useState("");
   const [image, setImage] = useState(null);
 
-  const [error, setError] = useState("");
+  // Grab products from props & find a correct one to upadte
+  const findProductById = products.find(product => product.id === id);
 
-  // eslint-disable-next-line
-  const [sucess, setSucess] = useState("");
-  const [redirect, setRedirect] = useState(false);
+  const dispatch = useDispatch();
+
+  const productEdit = useSelector(state => state.product);
+  const { error } = productEdit;
 
   useEffect(() => {
-    getOneProduct(props.id)
+    setTitle(findProductById.title);
+    setPrice(findProductById.price.toFixed(2));
+    setQuantity(findProductById.quantity);
+    setDescription(findProductById.description);
+    setImage(findProductById.image);
+    
+  }, [dispatch, findProductById])
+
+  const handleOnSubmit = (e) => {
+    e.preventDefault();
+    
+    // Save image first
+    saveImage(image)
     .then(res => {
-      setTitle(res.product.title)
-      setPrice(res.product.price.toFixed(2))
-      setQuantity(res.product.quantity)
-      setDescription(res.product.description)
-      setImage(res.product.image)
-    }, [])
+      if(res.status === 201) {
+        const product = {
+          title,
+          price,
+          image: res.url,
+          quantity,
+          description
+        }
 
-    return () => {
-      return false;
-    }
-    // eslint-disable-next-line 
-  }, [props])
+        // Then save product
+        dispatch(editProduct(product, id));
+        setShowEditForm(false);
+        dispatch(loadProducts());
 
-  const handleOnSubmit = async () => {
-    //console.log(123);
+      } else {
+        const product = {
+          title,
+          price,
+          image: 'no-picture.png',
+          quantity,
+          description
+        }
 
-    if(!title || !price || !quantity || !description) {
-      setError("* Champs Obligatoire");
-    } else {
-      try {
-        setError("");
-
-        console.log("IMAGE" ,image);
-
-        saveImage(image)
-        .then(res => {
-          if(res.status === 200) {
-            console.log(res.url);
-            
-            const product = {
-              title,
-              price,
-              image: res.url,
-              quantity,
-              description
-            }
-            console.log(product);
-
-            updateOneProduct(product, props.id)
-            .then(res => {
-              if(res.status === 200) {
-                console.log("OK");
-                getAllProducts()
-                .then(res => {
-                  props.loadProducts(res.products)
-                  setRedirect(true);
-                  props.setShowEditForm(false);
-                })
-              }
-            })
-          } else {
-            const product = {
-              title,
-              price,
-              image: "no-picture.png",
-              quantity,
-              description
-            }
-            //console.log(product);
-
-            updateOneProduct(product, props.id)
-            .then(res => {
-              if(res.status === 200) {
-                //console.log("OK");
-                getAllProducts()
-                .then(res => {
-                  props.loadProducts(res.products)
-                  setRedirect(true);
-                  props.setShowEditForm(false);
-                })
-              }
-            })
-          }
-
-        })
-
-      } catch (error) {
-        console.log(error);
+        // Then save product
+        dispatch(editProduct(product, id));
+        setShowEditForm(false);
+        dispatch(loadProducts());
       }
-    }
+    })
   }
 
   return (
     <section className="form">
-      {redirect && <Redirect to="/admin" />}
       <HeadingThree title="Modifier un produit" className="txt-center" />
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          handleOnSubmit();
-        }}
-      >
+      <form onSubmit={handleOnSubmit}>
         <div>
           <input
             type="text"
@@ -153,7 +107,7 @@ const EditProduct = (props) => {
             id="file"
             type="file"
             onChange={(e) => {
-              console.log(e.target.files[0])
+              // console.log(e.target.files[0])
               setImage(e.target.files[0])
             }}
           />
@@ -165,18 +119,9 @@ const EditProduct = (props) => {
           />
         </div>
       </form>
-      <p className={`error`}>{error}</p>
-      <p className={`success`}>{sucess}</p>
+      <p className="error txt-center mt">{error && error}</p>
     </section>
   )
 }
 
-const mapStateToProps = (store) => {
-  return {}
-}
-
-const mapDispatchToProps = {
-  loadProducts
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(EditProduct);
+export default EditProduct;

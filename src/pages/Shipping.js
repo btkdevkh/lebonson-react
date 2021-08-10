@@ -12,19 +12,21 @@ const Shipping = () => {
   const history = useHistory();
 
   const dispatch = useDispatch();
+
   const userState = useSelector(state => state.user);
-  const cartState = useSelector(state => state.cart);
-  const orderState = useSelector(state => state.order);
   const { userInfos, isLogged } = userState;
+
+  const cartState = useSelector(state => state.cart);
   const { carts } = cartState;
+
+  const orderState = useSelector(state => state.order);
   const { orders } = orderState;
 
   useEffect(() => {
     if(orders.affectedRows) {
       history.push(`/order/payment/${orders.insertId}`);
     }
-    // eslint-disable-next-line
-  }, [orders, userInfos, isLogged])
+  }, [orders, userInfos, isLogged, history])
   
   const onClickCheckOut = () => {
     if(payment === "Stripe") {

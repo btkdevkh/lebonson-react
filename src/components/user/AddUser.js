@@ -17,18 +17,19 @@ const AddUser = () => {
   const [city, setCity] = useState("");
 
   const [loading, setLoading] = useState(false);
-  const [showError, setShowError] = useState(false);
+  const [errorMsg, setErrorMsg] = useState(false);
   const history = useHistory();
 
   const dispatch = useDispatch();
-  const userState = useSelector(state => state.user);
-  const { isLogged, error, msg } = userState;
+
+  const userAuth = useSelector(state => state.user);
+  const { isLogged, success, error } = userAuth;
 
   useEffect(() => {
     const timer = setTimeout(() => {
+      setErrorMsg(false);
       if(isLogged) {
         setLoading(true);
-        setShowError(false);
         setTimeout(() => history.push('/user/profil'), 3000);
       }
     }, 3000);
@@ -36,12 +37,23 @@ const AddUser = () => {
     // Clean up
     return () => clearTimeout(timer);
 
-  }, [history, isLogged, error, msg])
+  }, [history, isLogged, errorMsg])
 
-  const handleOnSubmit = () => {
-    setShowError(true)
+  const handleOnSubmit = (e) => {
+    e.preventDefault();
+    setErrorMsg(true);
 
-    const user = { firstName, lastName, email, password, confirmPassword, address, zip, city };
+    const user = { 
+      firstName, 
+      lastName, 
+      email, 
+      password, 
+      confirmPassword, 
+      address, 
+      zip, 
+      city 
+    };
+
     dispatch(registerUser(user));
   }
 
@@ -50,12 +62,7 @@ const AddUser = () => {
       {loading && <Loading />}
       <section className="form">
         <HeadingThree title="S'enregistrer" />
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleOnSubmit();
-          }}
-        >
+        <form onSubmit={handleOnSubmit}>
           <div>
             <input
               type="text"
@@ -128,8 +135,8 @@ const AddUser = () => {
             />
           </div>
         </form>
-        <p className="error txt-center mt">{showError && error}</p>
-        <p className="success txt-center">{msg && msg}</p>
+        <p className="error txt-center mt">{errorMsg && error}</p>
+        <p className="success txt-center">{success && success}</p>
       </section>
     </Fragment>
   )

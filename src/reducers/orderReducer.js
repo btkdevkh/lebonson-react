@@ -1,47 +1,21 @@
 import { 
-  CREATE_ORDER_FAIL,
-  CREATE_ORDER_REQUEST,
-  CREATE_ORDER_SUCCESS,
-  LOAD_ORDERS_FAIL,
-  LOAD_ORDERS_REQUEST, 
-  LOAD_ORDERS_SUCCESS 
+  ORDER_LIST,
+  ORDER_CREATE
 } from '../actions/order/actions-types';
 
-const initialState = {
-  orders: [],
-}
+const initialState = { orders: [] }
 
 const orderReducer = (state = initialState, action) => {
   switch (action.type) {
-    case LOAD_ORDERS_REQUEST:
+    case ORDER_LIST:
       return {
-        orders: [],
-        laoding: true
+        ...state,
+        orders: action.payload
       }
-    case LOAD_ORDERS_SUCCESS:
+    case ORDER_CREATE:
       return {
+        ...state,
         orders: action.payload,
-        laoding: false
-      }
-    case LOAD_ORDERS_FAIL:
-      return {
-        laoding: false,
-        error: action.payload
-      }
-    case CREATE_ORDER_REQUEST:
-      return {
-        orders: [],
-        laoding: true
-      }
-    case CREATE_ORDER_SUCCESS:
-      return {
-        orders: action.payload,
-        laoding: false
-      }
-    case CREATE_ORDER_FAIL:
-      return {
-        laoding: false,
-        error: action.payload
       }
     default: return state;
   }

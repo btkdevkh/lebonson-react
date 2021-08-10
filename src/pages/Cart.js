@@ -8,14 +8,15 @@ import Button from '../components/Button';
 import '../assets/css/Cart.css';
 
 const Cart = () => {
+  const history = useHistory();
 
   const dispatch = useDispatch();
-  const users = useSelector(state => state.user);
-  const cartList = useSelector(state => state.cart);
-  const { isLogged } = users;
-  const { carts } = cartList;
 
-  const history = useHistory();
+  const userAuth = useSelector(state => state.user);
+  const { isLogged } = userAuth;
+
+  const cartList = useSelector(state => state.cart);
+  const { carts } = cartList;
 
   return (
     <section className="cart">

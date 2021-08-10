@@ -1,54 +1,59 @@
 import { 
-  LOAD_PRODUCTS_REQUEST, 
-  LOAD_PRODUCTS_SUCCESS, 
-  LOAD_PRODUCTS_FAIL, 
-  LOAD_PRODUCTS_BY_ORDER_ID_REQUEST, 
-  LOAD_PRODUCTS_BY_ORDER_ID_SUCCESS, 
-  LOAD_PRODUCTS_BY_ORDER_ID_FAIL 
+  PRODUCT_LIST,
+  PRODUCT_DETAILS,
+  PRODUCT_BY_ORDER_ID,
+  PRODUCT_CREATE,
+  PRODUCT_UPDATE,
+  PRODUCT_DELETE
 } from '../actions/product/actions-types';
 
 const initialState = {
   products: [],
+  productsByOrder: [],
+  loading: true,
+  product: {},
 }
 
-export const productReducer = (state = initialState, action) => {
+const productReducer = (state = initialState, action) => {
   switch (action.type) {
-    case LOAD_PRODUCTS_REQUEST:
+    case PRODUCT_LIST:
       return {
-        products: [],
-        loading: true
-      }
-    case LOAD_PRODUCTS_SUCCESS:
-      return {
+        ...state,
         products: action.payload,
         loading: false
       }
-    case LOAD_PRODUCTS_FAIL:
+    case PRODUCT_BY_ORDER_ID:
       return {
-        loading: false,
-        error: action.payload
+        ...state,
+        productsByOrder: action.payload,
+        loading: false
+      }
+    case PRODUCT_CREATE:
+      return {
+        ...state,
+        product: action.payload,
+        loading: false
+      }
+    case PRODUCT_UPDATE:
+      return {
+        ...state,
+        product: action.payload,
+        loading: false
+      }
+    case PRODUCT_DETAILS:
+      return {
+        ...state,
+        product: action.payload,
+        loading: false
+      }
+    case PRODUCT_DELETE:
+      return { 
+        ...state,
+        product: action.payload,
+        loading: false
       }
     default: return state
   }
 }
 
-export const productByOrderReducer = (state = initialState, action) => {
-  switch (action.type) {
-    case LOAD_PRODUCTS_BY_ORDER_ID_REQUEST:
-      return {
-        products: [],
-        loading: true
-      }
-    case LOAD_PRODUCTS_BY_ORDER_ID_SUCCESS:
-      return {
-        products: action.payload,
-        loading: false
-      }
-    case LOAD_PRODUCTS_BY_ORDER_ID_FAIL:
-      return {
-        loading: false,
-        error: action.payload
-      }
-    default: return state
-  }
-}
+export default productReducer;
