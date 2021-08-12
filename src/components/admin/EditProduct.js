@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { editProduct, loadProducts 
-} from '../../actions/product/productAction';
+import { editProduct } from '../../actions/product/productAction';
 import { saveImage } from '../../api/product';
 import HeadingThree from '../HeadingThree';
 
@@ -26,8 +25,8 @@ const EditProduct = ({ id, products, setShowEditForm }) => {
     setQuantity(findProductById.quantity);
     setDescription(findProductById.description);
     setImage(findProductById.image);
-    
-  }, [dispatch, findProductById])
+
+  }, [dispatch, findProductById, product])
 
   const handleOnSubmit = (e) => {
     e.preventDefault();
@@ -46,8 +45,7 @@ const EditProduct = ({ id, products, setShowEditForm }) => {
 
         // Then save product
         dispatch(editProduct(product, id));
-        setShowEditForm(false);
-        dispatch(loadProducts());
+        setTimeout(() => setShowEditForm(false), 3000);
 
       } else {
         const product = {
@@ -60,7 +58,8 @@ const EditProduct = ({ id, products, setShowEditForm }) => {
 
         // Then save product
         dispatch(editProduct(product, id));
-        dispatch(loadProducts());
+        setTimeout(() => setShowEditForm(false), 3000);
+
       }
     })
   }

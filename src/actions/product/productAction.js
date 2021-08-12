@@ -122,7 +122,7 @@ export const deleteProduct = id => async dispatch => {
     if(res.status === 200) {
       dispatch({
         type: PRODUCT_DELETE,
-        payload: null
+        payload: res
       })
 
     } else {

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { createProduct, loadProducts } from '../../actions/product/productAction';
+import { createProduct } from '../../actions/product/productAction';
 import HeadingThree from '../HeadingThree';
 import { saveImage } from '../../api/product';
 
@@ -35,8 +35,7 @@ const AddProduct = ({ setShowAddForm }) => {
 
         // Then save product
         dispatch(createProduct(product));
-        setShowAddForm(false);
-        dispatch(loadProducts());
+        setTimeout(() => setShowAddForm(false), 3000);
 
       } else {
         const product = {
@@ -49,7 +48,8 @@ const AddProduct = ({ setShowAddForm }) => {
 
         // Then save product
         dispatch(createProduct(product));
-        dispatch(loadProducts());
+        setTimeout(() => setShowAddForm(false), 3000);
+
       }
     })
     

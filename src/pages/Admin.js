@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { loadAllusers } from '../actions/user/userAction';
-import { deleteProduct, loadProducts } from '../actions/product/productAction';
+import { deleteProduct } from '../actions/product/productAction';
 import HeadingThree from '../components/HeadingThree';
 import Button from '../components/Button';
 import AddProduct from '../components/admin/AddProduct';
@@ -23,19 +23,21 @@ const Admin = () => {
   const { userInfos, isLogged, users } = userState;
 
   const productState = useSelector(state => state.product);
-  const { products } = productState;
+  const { products, product } = productState;
 
   useEffect(() => { 
-    //dispatch(loadAllusers());
     users.length === 0 && dispatch(loadAllusers());
 
     if(isLogged) {
       if(userInfos.role !== "Admin") {
-        //console.log("TRUE");
         history.push("/");
+      } 
+
+      if(product.status === 201 || product.status === 200) {
+        window.location.reload();
       }
     }
-  }, [history, isLogged, users, userInfos, dispatch])
+  }, [dispatch, history, isLogged, users, userInfos, products, product])
 
   return (
     <section className="admin">
@@ -94,7 +96,6 @@ const Admin = () => {
                   onClick={() => {
                     if(window.confirm("Voulez vous supprimer ce produit ?")) {
                       dispatch(deleteProduct(item.id));
-                      dispatch(loadProducts());
                     }
                   }}
                 >
