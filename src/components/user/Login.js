@@ -11,13 +11,12 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const [errorMsg, setErrorMsg] = useState(false);
   const history = useHistory();
 
   const dispatch = useDispatch();
 
-  const userAuth = useSelector(state => state.user);
-  const { isLogged, error } = userAuth;
+  const userState = useSelector(state => state.user);
+  const { isLogged, userInfos } = userState;
   
   useEffect(() => {
     if(isLogged) {
@@ -26,16 +25,10 @@ const Login = () => {
       }, 1000);
     }
 
-    const timer = setTimeout(() => setErrorMsg(false), 3000);
-    // Clean up
-    return () => clearTimeout(timer);
-
-  }, [dispatch, userAuth, isLogged, history, errorMsg])
+  }, [dispatch, isLogged, userInfos, history])
 
   const handleOnSubmit = (e) => {
     e.preventDefault();
-    setErrorMsg(true);
-
     const user = { email, password };
     dispatch(loginUser(user));
   }
@@ -77,7 +70,16 @@ const Login = () => {
         >
           <i className="fas fa-key"></i> Mot de passe oublié ? 
         </Link>
-        <p className="error txt-center">{errorMsg && error}</p>
+        
+        <p className={
+          userInfos && 
+          typeof userInfos === "object" ? 
+          "success txt-center mt" : 
+          "error txt-center mt"
+          }>
+            { userInfos && typeof userInfos === "object" ? userInfos.msg : userInfos }
+        </p>
+
       </section>
     </Fragment>
   )

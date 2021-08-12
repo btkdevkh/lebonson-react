@@ -17,17 +17,15 @@ const AddUser = () => {
   const [city, setCity] = useState("");
 
   const [loading, setLoading] = useState(false);
-  const [errorMsg, setErrorMsg] = useState(false);
   const history = useHistory();
 
   const dispatch = useDispatch();
 
-  const userAuth = useSelector(state => state.user);
-  const { isLogged, success, error } = userAuth;
+  const userState = useSelector(state => state.user);
+  const { isLogged, user } = userState;
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setErrorMsg(false);
       if(isLogged) {
         setLoading(true);
         setTimeout(() => history.push('/user/profil'), 3000);
@@ -37,11 +35,10 @@ const AddUser = () => {
     // Clean up
     return () => clearTimeout(timer);
 
-  }, [history, isLogged, errorMsg])
+  }, [history, isLogged, user])
 
   const handleOnSubmit = (e) => {
     e.preventDefault();
-    setErrorMsg(true);
 
     const user = { 
       firstName, 
@@ -135,8 +132,14 @@ const AddUser = () => {
             />
           </div>
         </form>
-        <p className="error txt-center mt">{errorMsg && error}</p>
-        <p className="success txt-center">{success && success}</p>
+        <p className={
+          user && 
+          typeof user === "object" ? 
+          "success txt-center mt" : 
+          "error txt-center mt"
+          }>
+            { user && typeof user === "object" ? user.msg : user }
+        </p>
       </section>
     </Fragment>
   )

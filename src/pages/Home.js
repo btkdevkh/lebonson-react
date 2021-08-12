@@ -1,11 +1,12 @@
 import React from 'react';
+import { useHistory } from 'react-router';
 import HeadingThree from '../components/HeadingThree';
 import ProductSlider from '../components/product/ProductSlider';
 import Button from '../components/Button';
 import '../assets/css/Home.css';
 
-const Home = (props) => {
-  //console.log(props);
+const Home = () => {
+  const history = useHistory();
   return (
     <section className="home">
       <HeadingThree title="Produits phares" />
@@ -16,7 +17,7 @@ const Home = (props) => {
       <Button
         className="btn mb"
         title="Voir nos produits"
-        onClick={() => props.history.push('/products')}
+        onClick={() => history.push('/products')}
       />
     </section>
   )

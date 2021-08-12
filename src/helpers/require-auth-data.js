@@ -14,11 +14,11 @@ const Hocs = (ChildComponent, withAuth = false) => {
 
     const dispatch = useDispatch();
     
-    const productList = useSelector(state => state.product);
-    const { products, loading, error } = productList;
+    const productState = useSelector(state => state.product);
+    const { products, loading, error } = productState;
 
-    const userAuth = useSelector(state => state.user);
-    const { isLogged } = userAuth;
+    const userState = useSelector(state => state.user);
+    const { isLogged } = userState;
 
     useEffect(() => {
       // If there's no products, load products

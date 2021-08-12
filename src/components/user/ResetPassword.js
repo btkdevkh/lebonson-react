@@ -1,64 +1,58 @@
-import React, { useState, useEffect } from 'react'
-import { Redirect } from 'react-router-dom';
-import HeadingThree from '../HeadingThree';
+import React, { useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import { checkPasswordToken } from '../../api/auth';
-import { updateOneUserPassword } from '../../api/user';
+import { useSelector, useDispatch } from 'react-redux';
+import { editUserPassword } from '../../actions/user/userAction';
+import HeadingThree from '../HeadingThree';
 
 const ResetPassword = () => {
 
   const [password, setPassword] = useState("");
-  const [sucess, setSucess] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [userId, setUserId] = useState(null);
 
-  const [error, setError] = useState("");
-  const [redirect, setRedirect] = useState(false);
+  const history = useHistory();
+
+  const dispatch = useDispatch();
+  const userState = useSelector(state => state.user);
+  const { user } = userState;
 
   useEffect(() => {
     const passwordToken = window.localStorage.getItem('password-token');
     if(passwordToken === null) {
-      setRedirect(redirect => redirect = true);
-    }
-  }, [])
-
-  const handleOnSubmit = () => {
-    if(!password || !confirmPassword) {
-      setError("* Remplissez touts les champs");
-    } else if(password !== confirmPassword) {
-      setError("* Les mots de passes ne sont pas identique");
+      history.push('/user/login');
     } else {
+      // If there's a token
       checkPasswordToken()
       .then(res => {
-        // console.log(res);
+        console.log(res);
         if(res.status !== 200) {
-          setRedirect(redirect => redirect = true);
+          history.push('/user/login');
         } else {
-          setError("");
-          const user = { password };
-          updateOneUserPassword(res.user.id, user)
-          .then(res => {
-            // console.log(res);
-            setSucess("Votre mot de pass a bien été modifié");
-            window.localStorage.removeItem("password-token");
-            setTimeout(() => {
-              setSucess("");
-              setRedirect(redirect => redirect = true);
-            }, 2000);
-          })
+          setUserId(res.user.id);
         }
-      }) 
+      })
     }
+    
+    if(user !== null && typeof user === "object") {
+      setTimeout(() => {
+        history.push('/user/login')
+        window.location.reload();
+      }, 3000);
+    }
+
+  }, [dispatch, user, history])
+
+  const handleOnSubmit = (e) => {
+    e.preventDefault();
+    const user = { password, confirmPassword };
+    dispatch(editUserPassword(user, userId))
   }
 
   return (
     <section className="form">
-      {redirect && <Redirect to="/user/login" />}
       <HeadingThree title="Réinitialisez mot de passe" />
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          handleOnSubmit();
-        }}
-      >
+      <form onSubmit={handleOnSubmit}>
         <div>
           <input
             type="password"
@@ -84,8 +78,14 @@ const ResetPassword = () => {
           />
         </div>
       </form>
-      <p className="error">{error}</p>
-      <p className="success">{sucess}</p>
+      <p className={
+        user && 
+        typeof user === "object" ? 
+        "success txt-center mt" : 
+        "error txt-center mt"
+        }>
+          { user && typeof user === "object" ? user.msg : user }
+      </p>
     </section>
   )
 }

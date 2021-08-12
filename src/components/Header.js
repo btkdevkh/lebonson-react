@@ -12,11 +12,11 @@ const Header = () => {
 
   const dispatch = useDispatch();
   
-  const userAuth = useSelector(state => state.user);
-  const { isLogged, userInfos } = userAuth;
+  const userState = useSelector(state => state.user);
+  const { isLogged, userInfos } = userState;
 
-  const cartList = useSelector(state => state.cart);
-  const { carts } = cartList;;
+  const cartState = useSelector(state => state.cart);
+  const { carts } = cartState;;
 
   // Calculate total Qty in cart
   const totalQte = carts.reduce((acc, item) => acc + item.selectedQuantity, 0);

@@ -78,15 +78,15 @@ export const loadProductsByOrderId = id => async dispatch => {
 
 export const createProduct = data => async dispatch => {
   try {
-    const res = await saveProduct(data);
-    if(res.status === 201) {
+    const response = await saveProduct(data);
+    if(response.status === 201) {
       dispatch({
         type: PRODUCT_CREATE,
-        payload: res.product
+        payload: response
       })
 
     } else {
-      throw new Error(res.msg)
+      throw new Error(response.msg)
     }
   } catch (error) {
     dispatch({
@@ -98,15 +98,15 @@ export const createProduct = data => async dispatch => {
 
 export const editProduct = (data, id) => async dispatch => {
   try {
-    const res = await updateOneProduct(data, id);
-    if(res.status === 200) {
+    const response = await updateOneProduct(data, id);
+    if(response.status === 200) {
       dispatch({
         type: PRODUCT_UPDATE,
-        payload: res.product
+        payload: response
       })
 
     } else {
-      throw new Error(res.msg)
+      throw new Error(response.msg)
     }
   } catch (error) {
     dispatch({

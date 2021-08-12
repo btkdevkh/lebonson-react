@@ -1,8 +1,6 @@
 # lebonson WebApp, projet de fin de formation
 
-Ce projet est un projet d'e-commerce et de fin de formation Développeur FullStack JavaScript.
-
-**ATTENTION: Cette formation est totalement en JAVASCRIPT, c'est normal que vous ne trouviez pas du code PHP dans ce projet.**
+Ce projet est un projet d'ecommerce de fin de formation Développeur FullStack JavaScript.
 
 
 ## Bref déscription & Fonctionalité principal:
@@ -36,8 +34,13 @@ Ce projet est un projet d'e-commerce et de fin de formation Développeur FullSta
 
 ### `npm install`
 
-Dans le dossier à la raçine du projet.
+Dans le dossier à la raçine du projet, c'est à dire celui du `frontend`.
 Dans le terminal, tapez npm install pour installer toutes les dépendances nécessaires.
+
+**Normalement, pour tester ce projet, vous n'avez qu'à faire npm install de celui du `frontend`, parce que celui du `backend` est déjà hébergé indépendamment.**
+
+Par contre si vous souhaitez testez aussi le backend en `localhost`, vous devez faire npm install également et
+vous devez créer une base de donnée nommer `lebonson` avec les tables déjà fournis dans le dossier `sql` de celui du `backend`.
 
 
 ### `npm start`
@@ -45,26 +48,17 @@ Dans le terminal, tapez npm install pour installer toutes les dépendances néce
 Tapez npm start pour faire tourner le projet en développement mode.
 Ouvrez [http://localhost:3000](http://localhost:3000) pour le visualiser dans le navigateur.
 
-## Fake informations pour tester les fonctionalité
 
-* User
-  - Email : josemarie@example.com
-  - Mot de passe : 12345
-  - Status : User
+## Tester le paiement avec un fake CB
 
-* Admin
-  - Email : james@example.com
-  - Mot de passe : 12345
-  - Status : Admin
-
-* Paiement
-  - CB : 4242 4242 4242 4242 / 05/22 /555 /91160
+  - CB : 4242 4242 4242 4242 / 05/22 /555 /75001
 
 
 ## Tester mot de passe oublié avec le fake infos
 
 * Ethereal is a free e-mail catching service.
-  - https://ethereal.email/login
+  https://ethereal.email/login
+  
   - Email : mitchell.roberts18@ethereal.email
   - Password : BEsgxhajh7aX267tRW
 

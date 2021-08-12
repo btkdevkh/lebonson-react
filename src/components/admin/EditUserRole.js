@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
-import { editUserRole } from '../../actions/user/userAction';
+import { editUserRole, loadAllusers } from '../../actions/user/userAction';
 
 const EditUserRole = ({ id, role }) => {
 
@@ -14,6 +14,7 @@ const EditUserRole = ({ id, role }) => {
     e.preventDefault();
     const user = { userRole };
     dispatch(editUserRole(user, id));
+    dispatch(loadAllusers());
     history.push("/admin");
   }
 

@@ -6,14 +6,18 @@ import {
   REGISTER_USER,
   EDIT_USER,
   USER_LIST,
-  USER_ROLE_UPDATE
+  USER_ROLE_UPDATE,
+  USER_FORGOT_PASSWORD,
+  USER_UPDATE_PASSWORD
 } from './actions-types';
 import { 
   logInUser, 
   createUser, 
   updateOneUser, 
   getAllUsers, 
-  updateOneUserRole
+  updateOneUserRole,
+  forgotUserPassword,
+  updateOneUserPassword
 } from '../../api/user';
 
 export const connectUser = user => dispatch => {
@@ -25,17 +29,17 @@ export const connectUser = user => dispatch => {
 
 export const loginUser = data => async dispatch => {
   try {
-    const res = await logInUser(data);
-    if(res.status === 200) {
+    const response = await logInUser(data);
+    if(response.status === 200) {
       dispatch({  
         type: LOGIN_USER,
-        payload: res.user
+        payload: response.user
       })
 
-      localStorage.setItem("lebonson-token", res.token);
+      localStorage.setItem("lebonson-token", response.token);
 
     } else {
-      throw new Error(res.msg)
+      throw new Error(response.msg)
     }
 
   } catch (error) {
@@ -56,56 +60,54 @@ export const logoutUser = () => async dispatch => {
 
 export const registerUser = data => async dispatch => {
   try {
-    const res = await createUser(data);
-    if(res.status === 201) {
+    const response = await createUser(data);
+    if(response.status === 201) {
       dispatch({
         type: REGISTER_USER,
-        payload: res.user,
-        success: res.msg
+        payload: response
       })
 
-      localStorage.setItem("lebonson-token", res.token);
+      localStorage.setItem("lebonson-token", response.token);
 
       dispatch({
         type: CONNECT_USER,
-        payload: res.user
+        payload: response.user
       })
 
     } else {
-      throw new Error(res.msg)
+      throw new Error(response.msg)
     }
     
   } catch (error) {
     dispatch({
       type: REGISTER_USER,
-      error: error.message
+      payload: error.message
     })
   }
 }
 
 export const editUser = (data, id) => async dispatch => {
   try {
-    const res = await updateOneUser(data, id);
-    if(res.status === 200) {
+    const response = await updateOneUser(data, id);
+    if(response.status === 200) {
       dispatch({
         type: EDIT_USER,
-        payload: res.user,
-        success: res.msg
+        payload: response
       })
 
       dispatch({
         type: CONNECT_USER,
-        payload: res.user,
+        payload: response.user
       })
 
     } else {
-      throw new Error(res.msg)
+      throw new Error(response.msg)
     }
 
   } catch (error) {
     dispatch({
       type: EDIT_USER,
-      error: error.message
+      payload: error.message
     })
   }
 }
@@ -137,8 +139,7 @@ export const editUserRole = (data, id) => async dispatch => {
     if(res.status === 200) {
       dispatch({
         type: USER_ROLE_UPDATE,
-        payload: res.user,
-        status: res.status
+        payload: res.user
       })
 
     } else {
@@ -148,7 +149,53 @@ export const editUserRole = (data, id) => async dispatch => {
   } catch (error) {
     dispatch({
       type: USER_ROLE_UPDATE,
-      error: error.message
+      payload: error.message
+    })
+  }
+}
+
+export const forgotUserPass = (data) => async dispatch => {
+  try {
+    const response = await forgotUserPassword(data);
+    if(response.status === 200) {
+      dispatch({
+        type: USER_FORGOT_PASSWORD,
+        payload: response
+      })
+
+      window.localStorage.setItem('password-token', response.token);
+
+    } else {
+      throw new Error(response.msg)
+    }
+
+  } catch (error) {
+    dispatch({
+      type: USER_FORGOT_PASSWORD,
+      payload: error.message
+    })
+  }
+}
+
+export const editUserPassword = (id, data) => async dispatch => {
+  try {
+    const response = await updateOneUserPassword(id, data);
+    if(response.status === 200) {
+      dispatch({
+        type: USER_UPDATE_PASSWORD,
+        payload: response
+      })
+
+      setTimeout(() => window.localStorage.removeItem("password-token"), 3000);
+
+    } else {
+      throw new Error(response.msg)
+    }
+
+  } catch (error) {
+    dispatch({
+      type: USER_UPDATE_PASSWORD,
+      payload: error.message
     })
   }
 }

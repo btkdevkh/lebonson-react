@@ -40,7 +40,7 @@ export const updateOneUserRole = async (data, id) => {
   return response.data;
 }
 
-export const updateOneUserPassword = async (id, data) => {
+export const updateOneUserPassword = async (data, id) => {
   const token = window.localStorage.getItem("password-token");
   const response = await axios.put(config.api_url+"/api/v1/user/reset_end_step/"+id, data, {
     headers: { "x-access-token": token }

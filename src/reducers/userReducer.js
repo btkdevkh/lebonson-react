@@ -6,7 +6,9 @@ import {
   EDIT_USER,
   USER_LIST,
   LOGIN_USER_FAIL,
-  USER_ROLE_UPDATE
+  USER_ROLE_UPDATE,
+  USER_FORGOT_PASSWORD,
+  USER_UPDATE_PASSWORD
 } from '../actions/user/actions-types';
 
 const initialState = { 
@@ -33,45 +35,44 @@ const userReducer = (state = initialState, action) => {
     case LOGIN_USER_FAIL:
       return { 
         ...state,
-        error: action.payload
+        userInfos: action.payload
       }
     case LOGOUT_USER:
       return { 
         ...state,
-        userInfos: action.payload, 
-        isLogged: false
+        user: action.payload
       }
     case REGISTER_USER:
       return { 
         ...state,
-        user: action.payload,
-        success: action.success,
-        error: action.error
+        user: action.payload
       }
     case EDIT_USER:
       return { 
         ...state,
-        user: action.payload, 
-        isLogged: true,
-        success: action.success,
-        error: action.error
+        user: action.payload
       }
     case USER_LIST:
       return { 
         ...state,
-        users: action.payload, 
-        isLogged: true, 
-        msg: action.msg 
+        users: action.payload
       }
     case USER_ROLE_UPDATE:
       return { 
         ...state,
-        user: action.payload,
-        isLogged: true,
-        status: action.status,
-        error: action.error
+        user: action.payload
       }
-    default: return state
+    case USER_FORGOT_PASSWORD:
+      return { 
+        ...state,
+        user: action.payload
+      }
+    case USER_UPDATE_PASSWORD:
+      return { 
+        ...state,
+        user: action.payload
+      }
+    default: return state;
   }
 }
 export default userReducer;

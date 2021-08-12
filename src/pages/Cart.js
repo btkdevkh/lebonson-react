@@ -12,11 +12,11 @@ const Cart = () => {
 
   const dispatch = useDispatch();
 
-  const userAuth = useSelector(state => state.user);
-  const { isLogged } = userAuth;
+  const userState = useSelector(state => state.user);
+  const { isLogged } = userState;
 
-  const cartList = useSelector(state => state.cart);
-  const { carts } = cartList;
+  const cartState = useSelector(state => state.cart);
+  const { carts } = cartState;
 
   return (
     <section className="cart">

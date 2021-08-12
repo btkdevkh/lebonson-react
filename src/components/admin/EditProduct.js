@@ -17,8 +17,8 @@ const EditProduct = ({ id, products, setShowEditForm }) => {
 
   const dispatch = useDispatch();
 
-  const productEdit = useSelector(state => state.product);
-  const { error } = productEdit;
+  const productState = useSelector(state => state.product);
+  const { product } = productState;
 
   useEffect(() => {
     setTitle(findProductById.title);
@@ -60,7 +60,6 @@ const EditProduct = ({ id, products, setShowEditForm }) => {
 
         // Then save product
         dispatch(editProduct(product, id));
-        setShowEditForm(false);
         dispatch(loadProducts());
       }
     })
@@ -119,7 +118,14 @@ const EditProduct = ({ id, products, setShowEditForm }) => {
           />
         </div>
       </form>
-      <p className="error txt-center mt">{error && error}</p>
+      <p className={
+        product && 
+        typeof product === "object" ? 
+        "success txt-center mt" : 
+        "error txt-center mt"
+        }>
+          { product && typeof product === "object" ? product.msg : product }
+      </p>
     </section>
   )
 }

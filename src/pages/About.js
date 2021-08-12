@@ -1,8 +1,10 @@
 import React from 'react';
+import { useHistory } from 'react-router';
 import HeadingThree from '../components/HeadingThree';
 import Button from '../components/Button';
 
-const About = (props) => {
+const About = () => {
+  const history = useHistory();
   return (
     <section className="home">
       <HeadingThree title="Qui nous somme ?" />
@@ -14,7 +16,7 @@ const About = (props) => {
       <Button
         className="btn mt"
         title="Retour à l'accueil"
-        onClick={() => props.history.push('/')}
+        onClick={() => history.push('/')}
       />
     </section>
   )

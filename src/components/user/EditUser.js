@@ -3,8 +3,6 @@ import { useHistory } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { editUser } from '../../actions/user/userAction';
 import HeadingThree from '../HeadingThree';
-import Button from '../Button';
-//import Loading from '../Loading';
 
 const EditUser = () => {
 
@@ -15,13 +13,12 @@ const EditUser = () => {
   const [zip, setZip] = useState("");
   const [city, setCity] = useState("");
 
-    const [errorMsg, setErrorMsg] = useState(false);
   const history = useHistory();
 
   const dispatch = useDispatch();
 
-  const userAuth = useSelector(state => state.user);
-  const { isLogged, userInfos, success, error } = userAuth;
+  const userState = useSelector(state => state.user);
+  const { isLogged, userInfos, user } = userState;
 
   useEffect(() => {
     if(isLogged) {
@@ -42,19 +39,17 @@ const EditUser = () => {
       setCity(city);
     }
 
-    const timer = setTimeout(() => {
-      setErrorMsg(false);
-    }, 3000);
+    if(user !== null && typeof user === "object") {
+      setTimeout(() => {
+        history.push('/user/profil')
+        window.location.reload();
+      }, 3000);
+    }
 
-    // Clean up
-    return () => clearTimeout(timer);
-
-  }, [userInfos, isLogged])
+  }, [userInfos, isLogged, user, history])
 
   const handleOnSubmit = (e) => {
     e.preventDefault();
-    setErrorMsg(true);
-
     const user = { 
       firstName, 
       lastName, 
@@ -129,18 +124,18 @@ const EditUser = () => {
               />
             </div>
           </form>
-          <p className="error txt-center mt">{errorMsg && error}</p>
-          <p className="success txt-center">{errorMsg && success}</p>
-          <Button
-            className="return btn mt"
-            title="Retour au shopping"
-            onClick={() => history.push("/products")}
-          />
+
+          <p className={
+            user && 
+            typeof user === "object" ? 
+            "success txt-center mt" : 
+            "error txt-center mt"
+            }>
+              { user && typeof user === "object" ? user.msg : user }
+          </p>
         </section> }
     </Fragment>
   )
 }
 
 export default EditUser;
-
-//{success && <Loading />}

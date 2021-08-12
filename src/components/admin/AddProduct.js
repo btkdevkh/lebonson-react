@@ -14,8 +14,8 @@ const AddProduct = ({ setShowAddForm }) => {
 
   const dispatch = useDispatch();
   
-  const productCreate = useSelector(state => state.product);
-  const { error } = productCreate;
+  const productState = useSelector(state => state.product);
+  const { product } = productState;
 
   const handleOnSubmit = (e) => {
     e.preventDefault();
@@ -49,7 +49,6 @@ const AddProduct = ({ setShowAddForm }) => {
 
         // Then save product
         dispatch(createProduct(product));
-        setShowAddForm(false);
         dispatch(loadProducts());
       }
     })
@@ -109,7 +108,15 @@ const AddProduct = ({ setShowAddForm }) => {
           />
         </div>
       </form>
-      <p className="error txt-center mt">{error && error}</p>
+      
+      <p className={
+        product && 
+        typeof product === "object" ? 
+        "success txt-center mt" : 
+        "error txt-center mt"
+        }>
+          { product && typeof product === "object" ? product.msg : product }
+      </p>
     </section>
   )
 }

@@ -1,51 +1,41 @@
-import React, { useState } from 'react'
-import { Redirect } from 'react-router-dom'; 
+import React, { useEffect, useState, Fragment } from 'react';
+import { useHistory } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { forgotUserPass } from '../../actions/user/userAction';
 import HeadingThree from '../HeadingThree';
-import { Fragment } from 'react';
-import { forgotUserPassword } from '../../api/user';
 
 const ForgotPassword = () => {
 
   const [email, setEmail] = useState("");
+  const history = useHistory();
 
-  const [error, setError] = useState("");
-  const [sucess, setSucess] = useState("");
-  const [redirect, setRedirect] = useState(false);
+  const dispatch = useDispatch();
 
-  const handleOnSubmit = () => {
-    if(!email) {
-      setError("* Email non renseigné");
-    } else {
-      setError("");
-      const user = { email }
-      forgotUserPassword(user)
-      .then(res => {
-        // console.log(res);
-        if(res.status === 404) {
-          setError(res.msg);
-        } else {
-          window.localStorage.setItem('password-token', res.token)
-          setSucess("Vérifiez dans votre email, un lien a été envoyé");
-          setTimeout(() => {
-            setSucess("");
-            setRedirect(redirect => redirect = true);
-          }, 2000);
-        }
-      })
+  const userState = useSelector(state => state.user);
+  const { user } = userState;
+
+  useEffect(() => {
+
+    if(user !== null && typeof user === "object") {
+      setTimeout(() => {
+        history.push('/user/login')
+        window.location.reload();
+      }, 3000);
     }
+
+  }, [dispatch, history, user])
+
+  const handleOnSubmit = (e) => {
+    e.preventDefault();
+    const userEmail = { email }
+    dispatch(forgotUserPass(userEmail));
   }
 
   return (
     <Fragment>
-      {redirect && <Redirect to="/" />}
       <section className="form">
         <HeadingThree title="Mot de passe oublié" />
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleOnSubmit();
-          }}
-        >
+        <form onSubmit={handleOnSubmit}>
           <div>
             <input
               type="email"
@@ -62,8 +52,16 @@ const ForgotPassword = () => {
             />
           </div>
         </form>
-        <p className={`error`}>{error}</p>
-        <p className={`success`}>{sucess}</p>
+
+        <p className={
+          user && 
+          typeof user === "object" ? 
+          "success txt-center mt" : 
+          "error txt-center mt"
+          }>
+            { user && typeof user === "object" ? user.msg : user }
+        </p>
+
       </section>
     </Fragment>
   )
