@@ -2,8 +2,9 @@ import React, { useState, useEffect, Fragment } from 'react';
 import { useHistory } from 'react-router-dom';
 import HeadingThree from '../HeadingThree';
 import { useSelector, useDispatch } from 'react-redux';
-import { registerUser } from '../../actions/user/userAction';
+import { registerUser, connectUser } from '../../actions/user/userAction';
 import Loading from '../Loading';
+import { checkToken } from '../../api/auth';
 
 const AddUser = () => {
 
@@ -26,16 +27,29 @@ const AddUser = () => {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      if(isLogged) {
-        setLoading(true);
-        setTimeout(() => history.push('/user/profil'), 3000);
+      const token = window.localStorage.getItem('lebonson-token');
+      if(token !== null) {
+        checkToken()
+        .then(res => {
+          if(res.status === 200) {
+            dispatch(connectUser(res.user));
+            setLoading(true);
+            setTimeout(() => {
+              history.push('/user/profil');
+              window.location.reload();
+            }, 3000);
+          } else {
+            history.push("/user/login");
+            window.localStorage.removeItem("lebonson-token");
+          }
+        })
       }
     }, 3000);
 
     // Clean up
     return () => clearTimeout(timer);
 
-  }, [history, isLogged, user])
+  }, [dispatch, history, isLogged, user])
 
   const handleOnSubmit = (e) => {
     e.preventDefault();

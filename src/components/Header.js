@@ -61,7 +61,7 @@ const Header = () => {
     <Fragment>
       <header>
 
-        <h1>lebonson</h1>
+        <Link to="/"><h1>lebonson</h1></Link>
 
         <div className={`header-menu-burger ${open}`}
           onClick={() => {

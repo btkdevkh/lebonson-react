@@ -1,11 +1,10 @@
-import React, { Fragment, useState, useEffect } from 'react';
+import React, { Fragment, useState } from 'react';
 import { Redirect } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { config } from '../../config';
 import { addToCart } from '../../actions/cart/cartAction';
 import HeadingThree from '../HeadingThree';
 import Button from '../Button';
-import { deleteClass } from '../../helpers/deleteClass';
 
 const ProductDetails = (props) => {
   const id = parseInt(props.match.params.id);
@@ -31,16 +30,6 @@ const ProductDetails = (props) => {
 
   const productDetails = products.filter(product => {
     return product.id === id;
-  })
-
-  // CSS nav li selected
-  useEffect(() => {
-    const lis = document.querySelectorAll('nav ul li');
-    deleteClass(lis, 'selected');
-    for(let i = 0; i < lis.length; i++) {
-      window.location.pathname === '/products/details/'+id &&
-      lis[1].classList.add('selected');
-    }
   })
 
   return (

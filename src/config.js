@@ -4,4 +4,5 @@ export const config = {
 
   api_url: "https://lebonson-back-api.herokuapp.com",
   img_url: "https://lebonson-back-api.herokuapp.com/images"
+  
 }

@@ -69,11 +69,6 @@ export const registerUser = data => async dispatch => {
 
       localStorage.setItem("lebonson-token", response.token);
 
-      dispatch({
-        type: CONNECT_USER,
-        payload: response.user
-      })
-
     } else {
       throw new Error(response.msg)
     }
