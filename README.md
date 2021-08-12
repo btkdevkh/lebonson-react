@@ -1,4 +1,4 @@
-# lebonson WebApp, projet de fin de formation
+# lebonson frontend en ReactJS, projet de fin de formation
 
 Ce projet est un projet d'ecommerce de fin de formation Développeur FullStack JavaScript.
 
